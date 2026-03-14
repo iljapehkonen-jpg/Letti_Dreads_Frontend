@@ -9,6 +9,7 @@
   width: 100%;
   z-index: 100;
 }
+
 .dropMenu {
   width: 100%;
   height: fit-content;
@@ -58,9 +59,10 @@
   gap: 5px;
   background-color: transparent;
   cursor: pointer;
+  width: fit-content;
 }
 .logo h1 {
-  font-size: 38px;
+  font-size: clamp(20px, 5vw, 40px);
   font-family: "Uncial Antiqua", serif;
   font-weight: 400;
   font-style: normal;
@@ -70,11 +72,16 @@
   width: 100px;
   height: auto;
 }
+.mobLogo {
+  display: none;
+}
 .nav {
   width: 175px;
   button {
     background-color: transparent;
     border: none;
+    width: 40px;
+    height: 40px;
     &:hover {
       transform: scale(120%);
       transition: transform 0.1s ease-in-out;
@@ -113,4 +120,23 @@
   width: 100%;
   left: 0;
   background-color: #fff;
+}
+@media screen and (max-width: 730px) {
+  .menu {
+    display: none;
+  }
+  .header {
+    flex-direction: row-reverse;
+    box-sizing: border-box;
+    justify-content: space-between;
+  }
+  .nav {
+    width: 24px;
+  }
+  .logo {
+    display: none;
+  }
+  .mobLogo {
+    display: flex;
+  }
 }

@@ -9,7 +9,7 @@ export function Header() {
   const menu = useRef();
   const navigate = useNavigate();
 
-  /* const handleClik = (e) => {
+  const handleClik = (e) => {
     if (menu.current && !menu.current.contains(e.target)) {
       setIsVisible(false);
     }
@@ -17,7 +17,7 @@ export function Header() {
   useEffect(() => {
     document.addEventListener("mousedown", handleClik);
     return () => document.removeEventListener("mousedown", handleClik);
-  }, []);*/
+  }, []);
   return (
     <>
       <div className={styles.header}>
@@ -52,6 +52,17 @@ export function Header() {
           <h1>Dreads</h1>
         </div>
 
+        <div
+          className={`${styles.mobLogo} ${styles.logo}`}
+          onClick={() => navigate("/")}
+        >
+          <img src="/image_no_bg__1_-removebg-preview.png" alt="logo" />
+          <div className={styles.mobText}>
+            <h1>Letti</h1>
+            <h1>Dreads</h1>
+          </div>
+        </div>
+
         <div className={styles.menu}>
           <button>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -62,7 +73,11 @@ export function Header() {
               />
             </svg>
           </button>
-          <button>
+          <button
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <title />
               <circle cx="12" cy="8" fill="#ffffff" r="4" />
@@ -72,7 +87,7 @@ export function Header() {
               />
             </svg>
           </button>
-          <button>
+          <button onClick={() => navigate("/cart")}>
             <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
               <title />
               <g data-name="1" id="_1">
@@ -129,10 +144,10 @@ export function Header() {
           <li
             onClick={() => {
               setIsVisible(false);
-              navigate("/made to order");
+              navigate("/make_to_order");
             }}
           >
-            Made to order
+            Make to order
           </li>
         </ul>
         <ul className={styles.menuList}>
@@ -163,14 +178,39 @@ export function Header() {
           <li
             onClick={() => {
               setIsVisible(false);
-              navigate("/shop/Braids");
+              navigate("/shop/braids");
             }}
           >
             Braids
           </li>
         </ul>
         <ul className={styles.menuList}>
-          <li onClick={() => {}}>Canikalons</li>
+          <li
+            onClick={() => {
+              setIsVisible(false);
+              navigate("/shop/canikalons");
+            }}
+          >
+            Canikalons
+          </li>
+        </ul>
+        <ul className={styles.menuList}>
+          <li
+            onClick={() => {
+              setIsVisible(false);
+              navigate("/cart");
+            }}
+          >
+            Cart
+          </li>
+          <li
+            onClick={() => {
+              setIsVisible(false);
+              navigate("/login");
+            }}
+          >
+            Login
+          </li>
         </ul>
       </div>
     </>

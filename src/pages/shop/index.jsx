@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./Shop.module.scss";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { fetchSets } from "../../redux/slices/setSlice";
 import { SetItem } from "../../componets";
 import ContentLoader from "react-content-loader";
@@ -15,18 +15,26 @@ export function Shop() {
   }, [dispatch]);
   const taitel = {
     dreads: "Dreads",
+    curls: "Curls",
+    braids: "Braids",
   };
+
+  const filteredSets = useMemo(() => {
+    return id
+      ? sets.filter((set) => set.category.toLowerCase() === id.toLowerCase())
+      : sets;
+  }, [id, sets]);
 
   return (
     <div className={styles.shop}>
-      <h1>{taitel[id]}</h1>
+      <h1>{id ? taitel[id] : "Shop"}</h1>
       <div className={styles.shopList}>
-        {sets.length
-          ? sets.map((set, index) => (
+        {filteredSets.length
+          ? filteredSets.map((set, index) => (
               <SetItem
                 className={styles.shopItem}
                 name={set.name}
-                img={set.img}
+                img={set.photo}
                 price={set.price}
                 key={index}
               />

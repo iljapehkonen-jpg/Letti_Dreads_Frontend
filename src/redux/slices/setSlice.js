@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios from "../../axios.js";
 const initialState = {
   sets: [],
   status: "pending",
   error: null,
 };
 export const fetchSets = createAsyncThunk("sets/fetchSets", async () => {
-  const resposnse = await axios.get(
-    "https://6803521b0a99cb7408eba2e6.mockapi.io/Dreads"
-  );
-  return resposnse.data;
+  const response = await axios.get("http://127.0.0.1:8000/products/");
+  return response.data;
 });
 const setsSlice = createSlice({
   name: "sets",
@@ -24,7 +22,7 @@ const setsSlice = createSlice({
       })
       .addCase(fetchSets.fulfilled, (state, action) => {
         state.status = "fulfilled";
-        state.sets = action.payload;
+        state.sets = action.payload.products;
       })
       .addCase(fetchSets.rejected, (state) => {
         state.status = "rejected";

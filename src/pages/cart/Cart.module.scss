@@ -1,0 +1,240 @@
+.cart {
+  padding: 120px 20px 120px 20px;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 25px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.content {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.items {
+  width: 100%;
+  flex-shrink: 1;
+}
+.cartPay {
+  width: 100%;
+  height: 100%;
+  flex-shrink: 2;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  h3 {
+    text-align: center;
+  }
+}
+info {
+  display: flex;
+}
+
+.truncate3 {
+  width: 200px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+.quantityControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+}
+.info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.quantityControl {
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 5px;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+.minus,
+.plus {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //padding: 0px 5px; ?
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.buttons button {
+  border: none;
+  background-color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.selectAllPanel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* checkbox style used next to select all */
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 8px;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.checkboxChecked {
+  background-color: rgb(72, 78, 255);
+}
+
+/* show a white checkmark when selected */
+.checkboxChecked::after {
+  content: "\2713"; /* check symbol ✓ */
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* item-specific checkbox in top right of card */
+.item {
+  position: relative; /* enable absolute children */
+}
+
+.itemCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  position: absolute;
+  top: 10px;
+  left: 10px; /* moved to left corner */
+  cursor: pointer;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+.itemCheckboxChecked {
+  background-color: blue;
+}
+
+.itemCheckboxChecked::after {
+  content: "\2713";
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+}
+
+.leftInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 1;
+  width: 100%;
+}
+.buttonPanel {
+  display: flex;
+  gap: 15px;
+}
+
+.buttonPanel button {
+  border: none;
+  background-color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+.button {
+  display: flex;
+  flex-direction: column;
+}
+.cartPayInfo {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid #c2c2c2;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  padding: 30px 0px 40px 0px;
+}
+.pay {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border: none;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.textCartPay,
+.periseCartPay {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 0px 25px 0px;
+}

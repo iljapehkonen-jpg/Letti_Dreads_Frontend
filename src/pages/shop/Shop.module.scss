@@ -7,7 +7,14 @@
   &List {
     display: grid;
     width: 100%;
-    gap: 20px;
+    gap: 30px;
     grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    justify-items: center;
+    align-items: start;
+  }
+}
+@media screen and (max-width: 730px) {
+  .shopList {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

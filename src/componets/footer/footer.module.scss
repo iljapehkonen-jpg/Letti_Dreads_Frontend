@@ -10,10 +10,46 @@
 
   &Item {
     color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   &Logo {
     height: auto;
     width: 80px;
+  }
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuList li {
+  margin-bottom: 20px;
+}
+
+.menuList a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.menuList a:hover {
+  color: #ccc;
+}
+
+.contactInfo {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media screen and (max-width: 730px) {
+  .footer {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 20px;
   }
 }
