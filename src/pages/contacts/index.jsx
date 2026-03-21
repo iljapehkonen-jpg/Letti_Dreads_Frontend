@@ -1,10 +1,18 @@
 import React from "react";
 import styles from "./Contacts.module.scss";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 export const Contacts = () => {
+  const { t, language } = useLanguage();
+  const bookingNotes = {
+    fi: "Ajanvaraus on pakollinen ennen vastaanottoa. Maanantaista perjantaihin tyoskentelemme klo 11:00-19:00. Lauantai ja sunnuntai suljettu.",
+    en: "Booking is required before the appointment. We work Monday to Friday from 11:00 to 19:00. Saturday and Sunday are closed.",
+    ru: "Запись обязательна перед приёмом. С понедельника по пятницу мы работаем с 11:00 до 19:00. Суббота и воскресенье закрыто.",
+  };
+
   return (
     <div className={styles.contacts}>
-      <h1>Ota yhteyttä</h1>
+      <h1>{t("contacts.title")}</h1>
 
       <div className={styles.mapContainer}>
         <iframe
@@ -23,26 +31,26 @@ export const Contacts = () => {
           rel="noopener noreferrer"
           className={styles.mapLink}
         >
-          Avaa Mapsissa
+          {t("contacts.openMaps")}
         </a>
       </div>
 
       <div className={styles.infoSection}>
-        <div>
-          <h2>Yhteystiedot</h2>
+        <div className={styles.infoCard}>
+          <h2>{t("contacts.contactInfo")}</h2>
           <div className={styles.contactInfo}>
             <div className={styles.infoItem}>
-              <strong>Osoite:</strong>
+              <strong>{t("contacts.address")}:</strong>
               <p>Kauppalantie 26, 00320 Helsinki, Suomi</p>
             </div>
             <div className={styles.infoItem}>
-              <strong>Puhelin:</strong>
+              <strong>{t("contacts.phone")}:</strong>
               <p>
                 <a href="tel:+358401234567">+358 40 123 4567</a>
               </p>
             </div>
             <div className={styles.infoItem}>
-              <strong>Sähköposti:</strong>
+              <strong>{t("contacts.email")}:</strong>
               <p>
                 <a href="mailto:letti.dreads@gmail.com">
                   letti.dreads@gmail.com
@@ -50,7 +58,7 @@ export const Contacts = () => {
               </p>
             </div>
             <div className={styles.infoItem}>
-              <strong>Nettisivut:</strong>
+              <strong>{t("contacts.website")}:</strong>
               <p>
                 <a
                   href="https://www.lettidreads.fi"
@@ -64,39 +72,38 @@ export const Contacts = () => {
           </div>
         </div>
 
-        <div>
-          <h2>Aukioloajat</h2>
+        <div className={styles.infoCard}>
+          <h2>{t("contacts.openingHours")}</h2>
+          <p className={styles.bookingNote}>
+            {bookingNotes[language] || bookingNotes.en}
+          </p>
           <div className={styles.hours}>
             <ul>
               <li>
-                <strong>Maanantai:</strong> <span>10:00 - 18:00</span>
+                <strong>{t("contacts.monday")}:</strong> <span>11:00 - 19:00</span>
               </li>
               <li>
-                <strong>Tiistai:</strong> <span>10:00 - 18:00</span>
+                <strong>{t("contacts.tuesday")}:</strong> <span>11:00 - 19:00</span>
               </li>
               <li>
-                <strong>Keskiviikko:</strong> <span>10:00 - 18:00</span>
+                <strong>{t("contacts.wednesday")}:</strong> <span>11:00 - 19:00</span>
               </li>
               <li>
-                <strong>Torstai:</strong> <span>10:00 - 20:00</span>
+                <strong>{t("contacts.thursday")}:</strong> <span>11:00 - 19:00</span>
               </li>
               <li>
-                <strong>Perjantai:</strong> <span>10:00 - 20:00</span>
+                <strong>{t("contacts.friday")}:</strong> <span>11:00 - 19:00</span>
               </li>
               <li>
-                <strong>Lauantai:</strong> <span>11:00 - 17:00</span>
+                <strong>{t("contacts.saturday")}:</strong> <span>{t("contacts.closed")}</span>
               </li>
               <li>
-                <strong>Sunnuntai:</strong> <span>Suljettu</span>
+                <strong>{t("contacts.sunday")}:</strong> <span>{t("contacts.closed")}</span>
               </li>
             </ul>
           </div>
-          <p style={{ marginTop: "30px", fontStyle: "italic", color: "#999" }}>
-            Ajanvaraus on suositeltavaa. Yhteydenottojen vastaaminen 24 tunnin
-            sisällä.
-          </p>
         </div>
       </div>
     </div>
   );
-};
+}

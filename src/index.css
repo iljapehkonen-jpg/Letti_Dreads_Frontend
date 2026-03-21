@@ -1,9 +1,28 @@
 :root {
+  --app-bg: #f6f7f9;
+  --app-text: #15181d;
+  --header-bg: #0c0d0f;
+  --header-text: #ffffff;
+  --header-surface: #15181d;
+  --footer-bg-start: #121418;
+  --footer-bg-end: #0c0d0f;
+  --footer-text: #f5f5f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /*overflow-x: hidden;*/
+}
+
+:root[data-theme="dark"] {
+  --app-bg: #0f1115;
+  --app-text: #f2f4f7;
+  --header-bg: #050608;
+  --header-text: #ffffff;
+  --header-surface: #11151b;
+  --footer-bg-start: #0a0c10;
+  --footer-bg-end: #050608;
+  --footer-text: #f5f5f5;
 }
 * {
   margin: 0;
@@ -11,4 +30,18 @@
 }
 button {
   cursor: pointer;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
 }

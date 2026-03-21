@@ -3,10 +3,12 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { fetchLogin } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 export const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     register,
@@ -18,11 +20,10 @@ export const Login = () => {
 
   const onRegister = async (data) => {
     const result = await dispatch(fetchLogin(data));
-    console.log(result);
-    if ("serverError" in result.payload) {
+    if (result.payload && "serverError" in result.payload) {
       alert(result.payload.serverError.error);
     } else {
-      alert("Login successful!");
+      alert(t("auth.loginSuccess"));
       navigate("/");
     }
   };
@@ -30,7 +31,7 @@ export const Login = () => {
   return (
     <div className={styles.users}>
       <div className={styles.users_box}>
-        <h2>Login User</h2>
+        <h2>{t("auth.loginTitle")}</h2>
         <form onSubmit={handleSubmit(onRegister)} className={styles.form}>
           <p>{errors?.username?.message}</p>
           <input
@@ -38,55 +39,55 @@ export const Login = () => {
             {...register("username", {
               required: {
                 value: true,
-                message: "Username is required ",
+                message: t("auth.validation.usernameRequired"),
               },
               minLength: {
                 value: 2,
-                message: "Username must be at least 2 characters long",
+                message: t("auth.validation.usernameMin"),
               },
               maxLength: {
                 value: 20,
-                message: "Username must be at most 20 characters long",
+                message: t("auth.validation.usernameMax"),
               },
               pattern: {
                 value: /^[A-Za-z0-9_.@-]+$/,
-                message: "Can only contain letters, numbers, and underscores",
+                message: t("auth.validation.usernamePattern"),
               },
             })}
-            placeholder="Username"
+            placeholder={t("auth.username")}
           />
 
           <p>{errors?.password?.message}</p>
           <input
             className={errors?.password ? styles.error : ""}
-            placeholder="Password"
+            placeholder={t("auth.password")}
             type="password"
             {...register("password", {
               required: {
                 value: true,
-                message: "Password is required",
+                message: t("auth.validation.passwordRequired"),
               },
               minLength: {
                 value: 8,
-                message: "Password must be at least 8 characters long",
+                message: t("auth.validation.passwordMin"),
               },
               maxLength: {
                 value: 20,
-                message: "Password must be at most 20 characters long",
+                message: t("auth.validation.passwordMax"),
               },
               pattern: {
                 value: /^(?!^\d{8}$).{8}$/,
-                message: "Password cannot be only numbers",
+                message: t("auth.validation.passwordPattern"),
               },
             })}
           />
 
-          <button>Login</button>
+          <button>{t("auth.loginButton")}</button>
         </form>
         <p>
-          Don't have an account? <a href="/sign_up">Sign Up</a>
+          {t("auth.noAccount")} <a href="/sign_up">{t("auth.signUp")}</a>
         </p>
       </div>
     </div>
   );
-};
+}

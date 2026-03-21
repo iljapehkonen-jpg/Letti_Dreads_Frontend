@@ -1,28 +1,138 @@
 import { useNavigate } from "react-router-dom";
-
-import { useState, useRef, useEffect } from "react";
-
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import {
+  AVATAR_COLOR_OPTIONS,
+  fetchLogout,
+  updateUserAvatarColor,
+} from "../../redux/slices/authSlice";
 import styles from "./Header.module.scss";
+
+const THEME_STORAGE_KEY = "letti-theme";
+
+const getInitialTheme = () => {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  return saved === "dark" ? "dark" : "light";
+};
+
+const getAvatarTextColor = (hex) => {
+  if (!hex || !hex.startsWith("#")) {
+    return "#0c0d0f";
+  }
+
+  const normalized = hex.slice(1);
+  const value =
+    normalized.length === 3
+      ? normalized
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : normalized;
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 160 ? "#0c0d0f" : "#ffffff";
+};
 
 export function Header() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isDreadsOpen, setIsDreadsOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [theme, setTheme] = useState(getInitialTheme);
   const menu = useRef();
+  const languageMenu = useRef();
+  const accountMenu = useRef();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { language, setLanguage, languages, t } = useLanguage();
+  const user = useSelector((state) => state.auth.user);
 
-  const handleClik = (e) => {
+  const avatarFallback = useMemo(() => {
+    const source = user?.username || user?.email || "";
+    return source.slice(0, 1).toUpperCase() || "?";
+  }, [user]);
+  const avatarBackgroundStyle = user?.avatar
+    ? undefined
+    : {
+        backgroundColor: user?.avatarColor || "#ffffff",
+        color: getAvatarTextColor(user?.avatarColor || "#ffffff"),
+      };
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  const handleClick = (e) => {
     if (menu.current && !menu.current.contains(e.target)) {
       setIsVisible(false);
+      setIsShopOpen(false);
+      setIsDreadsOpen(false);
+    }
+
+    if (languageMenu.current && !languageMenu.current.contains(e.target)) {
+      setIsLanguageOpen(false);
+    }
+
+    if (accountMenu.current && !accountMenu.current.contains(e.target)) {
+      setIsAccountOpen(false);
     }
   };
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleClik);
-    return () => document.removeEventListener("mousedown", handleClik);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  const closeAndNavigate = (path) => {
+    setIsVisible(false);
+    setIsShopOpen(false);
+    setIsDreadsOpen(false);
+    navigate(path);
+  };
+
+  const selectLanguage = (code) => {
+    setLanguage(code);
+    setIsLanguageOpen(false);
+  };
+
+  const handleAccountClick = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setIsAccountOpen((prev) => !prev);
+  };
+
+  const handleLogout = async () => {
+    await dispatch(fetchLogout());
+    setIsSettingsOpen(false);
+    setIsAccountOpen(false);
+    setIsVisible(false);
+    setIsShopOpen(false);
+    setIsDreadsOpen(false);
+    navigate("/");
+  };
+
   return (
     <>
       <div className={styles.header}>
         <div className={styles.nav}>
-          <button onClick={() => setIsVisible((prev) => !prev)}>
+          <button
+            onClick={() => setIsVisible((prev) => !prev)}
+            aria-label={t("header.menu")}
+          >
             <svg
               fill="none"
               height="24"
@@ -47,9 +157,9 @@ export function Header() {
         </div>
 
         <div className={styles.logo} onClick={() => navigate("/")}>
-          <h1>Letti</h1>
+          <h1>{t("header.brandFirst")}</h1>
           <img src="/image_no_bg__1_-removebg-preview.png" alt="logo" />
-          <h1>Dreads</h1>
+          <h1>{t("header.brandSecond")}</h1>
         </div>
 
         <div
@@ -58,38 +168,38 @@ export function Header() {
         >
           <img src="/image_no_bg__1_-removebg-preview.png" alt="logo" />
           <div className={styles.mobText}>
-            <h1>Letti</h1>
-            <h1>Dreads</h1>
+            <h1>{t("header.brandFirst")}</h1>
+            <h1>{t("header.brandSecond")}</h1>
           </div>
         </div>
 
         <div className={styles.menu}>
-          <button>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <title />
-              <path
-                d="M20.56,18.44l-4.67-4.67a7,7,0,1,0-2.12,2.12l4.67,4.67a1.5,1.5,0,0,0,2.12,0A1.49,1.49,0,0,0,20.56,18.44ZM5,10a5,5,0,1,1,5,5A5,5,0,0,1,5,10Z"
-                fill="#ffffff"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={() => {
-              navigate("/login");
-            }}
-          >
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <title />
-              <circle cx="12" cy="8" fill="#ffffff" r="4" />
-              <path
-                d="M20,19v1a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V19a6,6,0,0,1,6-6h4A6,6,0,0,1,20,19Z"
-                fill="#ffffff"
-              />
-            </svg>
-          </button>
-          <button onClick={() => navigate("/cart")}>
+          <div className={styles.langMenu} ref={languageMenu}>
+            <button
+              type="button"
+              className={styles.langTrigger}
+              onClick={() => setIsLanguageOpen((prev) => !prev)}
+            >
+              {t(`common.languages.${language}`)}
+            </button>
+            {isLanguageOpen ? (
+              <div className={styles.langDropdown}>
+                {languages.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    className={language === code ? styles.langActive : ""}
+                    onClick={() => selectLanguage(code)}
+                  >
+                    {t(`common.languages.${code}`)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <button onClick={() => navigate("/cart")} aria-label={t("header.cart")}>
             <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-              <title />
               <g data-name="1" id="_1">
                 <path
                   d="M397.78,316H192.65A15,15,0,0,1,178,304.33L143.46,153.85a15,15,0,0,1,14.62-18.36H432.35A15,15,0,0,1,447,153.85L412.4,304.33A15,15,0,0,1,397.78,316ZM204.59,286H385.84l27.67-120.48H176.91Z"
@@ -110,109 +220,270 @@ export function Header() {
               </g>
             </svg>
           </button>
+
+          <div className={styles.accountMenu} ref={accountMenu}>
+            <button
+              onClick={handleAccountClick}
+              aria-label={user ? t("header.account") : t("header.login")}
+              className={styles.accountButton}
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.username} className={styles.avatarImage} />
+              ) : user ? (
+                <span className={styles.avatarFallback} style={avatarBackgroundStyle}>
+                  {avatarFallback}
+                </span>
+              ) : (
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" fill="#ffffff" r="4" />
+                  <path
+                    d="M20,19v1a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V19a6,6,0,0,1,6-6h4A6,6,0,0,1,20,19Z"
+                    fill="#ffffff"
+                  />
+                </svg>
+              )}
+            </button>
+
+            {user && isAccountOpen ? (
+              <div className={styles.accountDropdown}>
+                <div className={styles.accountSummary}>
+                  <div className={styles.accountAvatarLarge}>
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.username} className={styles.avatarImage} />
+                    ) : (
+                      <span className={styles.avatarFallback} style={avatarBackgroundStyle}>
+                        {avatarFallback}
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.accountMeta}>
+                    <strong>{user.username}</strong>
+                    <span>{user.email}</span>
+                  </div>
+                </div>
+
+                <div className={styles.accountLinks}>
+                  <button
+                    type="button"
+                    className={styles.accountLink}
+                    onClick={() => {
+                      setIsAccountOpen(false);
+                      navigate("/cart");
+                    }}
+                  >
+                    {t("header.cart")}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.accountLink}
+                    onClick={() => {
+                      setIsAccountOpen(false);
+                      setIsSettingsOpen(true);
+                    }}
+                  >
+                    {t("header.settings")}
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.logoutButton}
+                  onClick={handleLogout}
+                >
+                  <span className={styles.logoutIcon} aria-hidden="true">
+                    ↪
+                  </span>
+                  <span>{t("header.logout")}</span>
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
+
       <div
         className={`${styles.dropMenu} ${isVisible ? styles.visible : ""}`}
         ref={menu}
       >
         <ul className={styles.menuList}>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/");
-            }}
-          >
-            Home
+          <li onClick={() => closeAndNavigate("/")}>{t("header.home")}</li>
+
+          <li className={styles.shopItem}>
+            <button
+              type="button"
+              className={`${styles.shopToggle} ${isShopOpen ? styles.shopToggleOpen : ""}`}
+              onClick={() => setIsShopOpen((prev) => !prev)}
+            >
+              {t("header.shop")}
+            </button>
+            {isShopOpen ? (
+              <div className={styles.shopSubmenu}>
+                <div className={styles.dreadsGroup}>
+                  <button
+                    type="button"
+                    className={`${styles.submenuToggle} ${isDreadsOpen ? styles.submenuToggleOpen : ""}`}
+                    onClick={() => setIsDreadsOpen((prev) => !prev)}
+                  >
+                    <span>{t("header.dreads")}</span>
+                    <span className={styles.submenuCaret} aria-hidden="true" />
+                  </button>
+
+                  {isDreadsOpen ? (
+                    <div className={styles.dreadsSubmenu}>
+                      <button
+                        type="button"
+                        onClick={() => closeAndNavigate("/shop/smooth-dreads")}
+                      >
+                        {t("header.smoothDreads")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => closeAndNavigate("/shop/textured-dreads")}
+                      >
+                        {t("header.texturedDreads")}
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+                <button type="button" onClick={() => closeAndNavigate("/shop/curls")}>
+                  {t("header.curls")}
+                </button>
+                <button type="button" onClick={() => closeAndNavigate("/shop/braids")}>
+                  {t("header.braids")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeAndNavigate("/shop/hair-on-braid")}
+                >
+                  {t("header.hairOnBraid")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeAndNavigate("/shop/curls-on-mini-dread")}
+                >
+                  {t("header.curlsOnMiniDread")}
+                </button>
+              </div>
+            ) : null}
           </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/cart");
-            }}
-          >
-            Cart
+
+          <li onClick={() => closeAndNavigate("/contacts")}>
+            {t("header.contacts")}
           </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/contacts");
-            }}
-          >
-            Contacts
-          </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/make_to_order");
-            }}
-          >
-            Make to order
-          </li>
-        </ul>
-        <ul className={styles.menuList}>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/shop");
-            }}
-          >
-            Shop
-          </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/shop/dreads");
-            }}
-          >
-            Dreads
-          </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/shop/curls");
-            }}
-          >
-            Curls
-          </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/shop/braids");
-            }}
-          >
-            Braids
-          </li>
-        </ul>
-        <ul className={styles.menuList}>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/shop/canikalons");
-            }}
-          >
-            Canikalons
-          </li>
-        </ul>
-        <ul className={styles.menuList}>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/cart");
-            }}
-          >
-            Cart
-          </li>
-          <li
-            onClick={() => {
-              setIsVisible(false);
-              navigate("/login");
-            }}
-          >
-            Login
-          </li>
+          <li onClick={() => closeAndNavigate("/faq")}>{t("header.faq")}</li>
+          <li onClick={() => closeAndNavigate("/cart")}>{t("header.cart")}</li>
+          {!user ? (
+            <li onClick={() => closeAndNavigate("/login")}>{t("header.login")}</li>
+          ) : null}
+          <li onClick={() => closeAndNavigate("/other")}>{t("header.other")}</li>
         </ul>
       </div>
+
+      {user && isSettingsOpen ? (
+        <div
+          className={styles.settingsOverlay}
+          onClick={() => setIsSettingsOpen(false)}
+        >
+          <div
+            className={styles.settingsModal}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.settingsClose}
+              onClick={() => setIsSettingsOpen(false)}
+            >
+              ×
+            </button>
+
+            <div className={styles.settingsHero}>
+              <div className={styles.settingsAvatar}>
+                {user.avatar ? (
+                  <img src={user.avatar} alt={user.username} className={styles.avatarImage} />
+                ) : (
+                  <span className={styles.avatarFallback} style={avatarBackgroundStyle}>
+                    {avatarFallback}
+                  </span>
+                )}
+              </div>
+              <div className={styles.settingsMeta}>
+                <h2>{user.username}</h2>
+                <p>{user.email}</p>
+                <span>{user.email}</span>
+              </div>
+            </div>
+
+            <div className={styles.settingsGrid}>
+              <section className={styles.settingsCard}>
+                <h3>{t("header.theme")}</h3>
+                <div className={styles.choiceRow}>
+                  <button
+                    type="button"
+                    className={theme === "light" ? styles.choiceActive : styles.choiceButton}
+                    onClick={() => setTheme("light")}
+                  >
+                    {t("header.lightTheme")}
+                  </button>
+                  <button
+                    type="button"
+                    className={theme === "dark" ? styles.choiceActive : styles.choiceButton}
+                    onClick={() => setTheme("dark")}
+                  >
+                    {t("header.darkTheme")}
+                  </button>
+                </div>
+              </section>
+
+              <section className={styles.settingsCard}>
+                <h3>{t("common.language")}</h3>
+                <div className={styles.choiceRow}>
+                  {languages.map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      className={
+                        language === code ? styles.choiceActive : styles.choiceButton
+                      }
+                      onClick={() => setLanguage(code)}
+                    >
+                      {t(`common.languages.${code}`)}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className={styles.settingsCard}>
+                <h3>{t("header.security")}</h3>
+                <p className={styles.securityNote}>{t("header.passwordHidden")}</p>
+              </section>
+
+              <section className={styles.settingsCard}>
+                <h3>{t("header.avatarColor")}</h3>
+                <div className={styles.colorGrid}>
+                  {AVATAR_COLOR_OPTIONS.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`${styles.colorSwatch} ${user.avatarColor === color ? styles.colorSwatchActive : ""}`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => dispatch(updateUserAvatarColor(color))}
+                      aria-label={color}
+                    />
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <button
+              type="button"
+              className={styles.settingsLogout}
+              onClick={handleLogout}
+            >
+              {t("header.logout")}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

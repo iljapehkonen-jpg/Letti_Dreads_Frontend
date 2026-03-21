@@ -23,6 +23,7 @@
     box-shadow: 0 4px 15px rgba(50, 72, 243, 0.2);
     background-color: #ffffff;
     position: relative;
+    z-index: 0;
 
     .mapLink {
       position: absolute;
@@ -32,7 +33,7 @@
       padding: 8px 12px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
+      z-index: 1;
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
@@ -57,6 +58,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+
+    .infoCard {
+      padding: 28px;
+      border-radius: 18px;
+      background-color: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
 
     h2 {
       font-size: 32px;
@@ -89,13 +97,18 @@
       gap: 15px;
 
       .infoItem {
-        display: flex;
+        display: grid;
+        grid-template-columns: 110px 1fr;
         gap: 15px;
-        align-items: flex-start;
+        align-items: baseline;
 
         strong {
           color: #3248f3;
-          min-width: 100px;
+          min-width: 0;
+        }
+
+        p {
+          margin: 0;
         }
       }
     }
@@ -109,9 +122,10 @@
         li {
           padding: 8px 0;
           color: #666;
-          display: flex;
-          justify-content: space-between;
+          display: grid;
+          grid-template-columns: 1fr auto;
           gap: 20px;
+          align-items: baseline;
 
           strong {
             color: #333;
@@ -119,6 +133,33 @@
         }
       }
     }
+
+    .bookingNote {
+      margin-top: 12px;
+      margin-bottom: 0;
+      font-style: italic;
+      color: #777;
+    }
+  }
+}
+
+:global(:root[data-theme="dark"]) {
+  .contacts h1,
+  .contacts .infoSection .hours ul li strong {
+    color: #f3f5f7;
+  }
+
+  .contacts .infoSection p,
+  .contacts .infoSection .hours ul li,
+  .contacts .infoSection .bookingNote {
+    color: #c7ced8;
+  }
+
+  .contacts .mapContainer,
+  .contacts .infoSection .infoCard {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
