@@ -8,6 +8,7 @@ export const slugifyCategory = (value = "") =>
     .replace(/^-+|-+$/g, "");
 
 const CATEGORY_ALIASES = {
+  instock: ["instock", "in-stock", "instant", "gotovye-sety", "valmiit-setit"],
   dreads: ["dreads", "dreadlocks", "rastat", "rasta"],
   "smooth-dreads": ["smooth-dreads", "smooth-dreadlocks", "gladkie-dredy"],
   "textured-dreads": [
@@ -27,8 +28,10 @@ const CATEGORY_ALIASES = {
     "curls-on-mini-dread",
     "curls-on-small-dread",
     "kudri-na-malenkoy-drede",
+    "kudri-na-dredine",
     "kiharat-pienella-rastalla",
   ],
+  other: ["other", "drugoe", "muu"],
   canikalons: ["canikalons", "kanekalonit", "kanekalony"],
 };
 
@@ -49,6 +52,7 @@ export const getCategoryTranslationKey = (slug = "") => {
 
   if (
     [
+      "instock",
       "dreads",
       "smooth-dreads",
       "textured-dreads",
@@ -56,6 +60,7 @@ export const getCategoryTranslationKey = (slug = "") => {
       "braids",
       "hair-on-braid",
       "curls-on-mini-dread",
+      "other",
       "canikalons",
     ].includes(normalized)
   ) {

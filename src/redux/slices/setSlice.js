@@ -1,14 +1,37 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios.js";
+import axios from "axios";
+
 const initialState = {
   sets: [],
   status: "pending",
   error: null,
 };
-export const fetchSets = createAsyncThunk("sets/fetchSets", async () => {
-  const response = await axios.get("http://127.0.0.1:8000/products/");
-  return response.data;
-});
+
+export const fetchSets = createAsyncThunk(
+  "sets/fetchSets",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/products/", {
+        withCredentials: false,
+      });
+      return response.data;
+    } catch (error) {
+      try {
+        const fallbackResponse = await fetch("http://127.0.0.1:8000/products/");
+        if (!fallbackResponse.ok) {
+          throw new Error(`Request failed with status ${fallbackResponse.status}`);
+        }
+
+        return await fallbackResponse.json();
+      } catch (fallbackError) {
+        return rejectWithValue({
+          error: fallbackError.message || error.message,
+        });
+      }
+    }
+  },
+);
+
 const setsSlice = createSlice({
   name: "sets",
   initialState,
@@ -24,9 +47,9 @@ const setsSlice = createSlice({
         state.status = "fulfilled";
         state.sets = action.payload.products;
       })
-      .addCase(fetchSets.rejected, (state) => {
+      .addCase(fetchSets.rejected, (state, action) => {
         state.status = "rejected";
-        state.error = "error";
+        state.error = action.payload?.error || "error";
         state.sets = [];
       });
   },

@@ -2,7 +2,8 @@ import styles from "./Faq.module.scss";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 export function FAQ() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const faqTitle = language === "ru" ? "Экспертность" : "FAQ";
 
   const items = [
     {
@@ -26,7 +27,7 @@ export function FAQ() {
   return (
     <div className={styles.faq}>
       <div className={styles.hero}>
-        <h1>{t("faq.title")}</h1>
+        <h1>{faqTitle}</h1>
         <p>{t("faq.intro")}</p>
       </div>
 

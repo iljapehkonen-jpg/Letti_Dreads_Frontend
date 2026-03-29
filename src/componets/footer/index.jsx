@@ -11,7 +11,11 @@ const contactLinks = {
 };
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const monFriLabel = language === "ru" ? "Пн-Пт" : language === "fi" ? "Ma-Pe" : "Mon-Fri";
+  const faqLabel = language === "ru" ? "Экспертность" : "FAQ";
+  const curlsOnMiniDreadLabel =
+    language === "fi" ? "Kiharat pikku rastalla" : t("header.curlsOnMiniDread");
 
   return (
     <footer className={styles.footer}>
@@ -38,13 +42,16 @@ export function Footer() {
             <Link to="/shop">{t("footer.shop")}</Link>
           </li>
           <li>
+            <Link to="/instock">{t("header.instock")}</Link>
+          </li>
+          <li>
+            <Link to="/faq">{faqLabel}</Link>
+          </li>
+          <li>
             <Link to="/contacts">{t("footer.contacts")}</Link>
           </li>
           <li>
             <Link to="/cart">{t("footer.cart")}</Link>
-          </li>
-          <li>
-            <Link to="/login">{t("footer.login")}</Link>
           </li>
         </ul>
       </div>
@@ -53,7 +60,10 @@ export function Footer() {
         <h3>{t("footer.shopCategories")}</h3>
         <ul className={styles.menuList}>
           <li>
-            <Link to="/shop/dreads">{t("footer.dreads")}</Link>
+            <Link to="/shop/smooth-dreads">{t("header.smoothDreads")}</Link>
+          </li>
+          <li>
+            <Link to="/shop/textured-dreads">{t("header.texturedDreads")}</Link>
           </li>
           <li>
             <Link to="/shop/curls">{t("footer.curls")}</Link>
@@ -62,7 +72,10 @@ export function Footer() {
             <Link to="/shop/braids">{t("footer.braids")}</Link>
           </li>
           <li>
-            <Link to="/shop/canikalons">{t("footer.canikalons")}</Link>
+            <Link to="/shop/hair-on-braid">{t("header.hairOnBraid")}</Link>
+          </li>
+          <li>
+            <Link to="/shop/curls-on-mini-dread">{curlsOnMiniDreadLabel}</Link>
           </li>
         </ul>
       </div>
@@ -107,16 +120,12 @@ export function Footer() {
         <h3>{t("footer.openingHours")}</h3>
         <ul className={styles.infoList}>
           <li>
-            <span>{t("footer.monWed")}</span>
-            <p>10:00 - 18:00</p>
-          </li>
-          <li>
-            <span>{t("footer.thuFri")}</span>
-            <p>10:00 - 20:00</p>
+            <span>{monFriLabel}</span>
+            <p>11:00 - 19:00</p>
           </li>
           <li>
             <span>{t("footer.saturday")}</span>
-            <p>11:00 - 17:00</p>
+            <p>{t("footer.closed")}</p>
           </li>
           <li>
             <span>{t("footer.sunday")}</span>

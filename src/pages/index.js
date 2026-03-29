@@ -1,7 +1,9 @@
 export { Home } from "./home";
 export { Contacts } from "./contacts";
 export { Shop } from "./shop";
+export { Instant } from "./instant";
 export { FAQ } from "./faq";
 export { SignUp } from "./sign_up";
 export { Login } from "./login";
 export { Cart } from "./cart";
+export { Checkout } from "./checkout";

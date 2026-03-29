@@ -5,9 +5,9 @@ import { useLanguage } from "../../i18n/LanguageContext.jsx";
 export const Contacts = () => {
   const { t, language } = useLanguage();
   const bookingNotes = {
-    fi: "Ajanvaraus on pakollinen ennen vastaanottoa. Maanantaista perjantaihin tyoskentelemme klo 11:00-19:00. Lauantai ja sunnuntai suljettu.",
-    en: "Booking is required before the appointment. We work Monday to Friday from 11:00 to 19:00. Saturday and Sunday are closed.",
-    ru: "Запись обязательна перед приёмом. С понедельника по пятницу мы работаем с 11:00 до 19:00. Суббота и воскресенье закрыто.",
+    fi: "Ajanvaraus on pakollinen.",
+    en: "Booking is required in advance.",
+    ru: "Предварительная запись обязательна.",
   };
 
   return (
@@ -106,4 +106,4 @@ export const Contacts = () => {
       </div>
     </div>
   );
-}
+};

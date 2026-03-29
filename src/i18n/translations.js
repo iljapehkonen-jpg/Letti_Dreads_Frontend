@@ -12,7 +12,7 @@ export const translations = {
       home: "Etusivu",
       cart: "Ostoskori",
       contacts: "Yhteystiedot",
-      faq: "FAQ",
+      faq: "Экспертность",
       shop: "Kauppa",
       other: "Muu",
       dreads: "Rastat",
@@ -35,6 +35,7 @@ export const translations = {
       accountId: "Tilin ID",
       account: "Tili",
       menu: "Valikko",
+      instock: "Valmiit setit",
       brandFirst: "Letti",
       brandSecond: "Dreads",
     },
@@ -65,6 +66,7 @@ export const translations = {
         braids: "Letit",
         "hair-on-braid": "Hiukset letillä",
         "curls-on-mini-dread": "Kiharat pienellä rastalla",
+        other: "Muu",
         canikalons: "Kanekalonit",
       },
       modal: {
@@ -98,7 +100,7 @@ export const translations = {
     },
     faq: {
       eyebrow: "Care Guide",
-      title: "FAQ",
+      title: "Экспертность",
       intro:
         "Täältä löydät lyhyet vastaukset yleisimpiin kysymyksiin hoidosta, pesusta, käytöstä ja siitä, miten setit pysyvät kauniina mahdollisimman pitkään.",
       quickTitle: "Quick tip",
@@ -216,7 +218,7 @@ export const translations = {
       home: "Home",
       cart: "Cart",
       contacts: "Contacts",
-      faq: "FAQ",
+      faq: "Экспертность",
       shop: "Shop",
       other: "Other",
       dreads: "Dreads",
@@ -239,6 +241,7 @@ export const translations = {
       accountId: "Account ID",
       account: "Account",
       menu: "Menu",
+      instock: "Instock",
       brandFirst: "Letti",
       brandSecond: "Dreads",
     },
@@ -269,6 +272,7 @@ export const translations = {
         braids: "Braids",
         "hair-on-braid": "Hair on braid",
         "curls-on-mini-dread": "Curls on mini dread",
+        other: "Other",
         canikalons: "Canikalons",
       },
       modal: {
@@ -302,7 +306,7 @@ export const translations = {
     },
     faq: {
       eyebrow: "Care Guide",
-      title: "FAQ",
+      title: "Экспертность",
       intro:
         "Here you can find short answers to common questions about care, washing, wearing and how to keep the sets looking beautiful for as long as possible.",
       quickTitle: "Quick tip",
@@ -429,7 +433,7 @@ export const translations = {
       curls: "Кудри",
       braids: "Косы",
       hairOnBraid: "Волосы на косе",
-      curlsOnMiniDread: "Кудри на редине",
+      curlsOnMiniDread: "Кудри на дредине",
       canikalons: "Канекалоны",
       login: "Войти",
       logout: "Выйти",
@@ -472,7 +476,8 @@ export const translations = {
         curls: "Кудри",
         braids: "Косы",
         "hair-on-braid": "Волосы на косе",
-        "curls-on-mini-dread": "Кудри на редине",
+        "curls-on-mini-dread": "Кудри на дредине",
+        other: "Другое",
         canikalons: "Канекалоны",
       },
       modal: {

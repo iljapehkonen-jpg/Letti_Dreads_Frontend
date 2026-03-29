@@ -4,6 +4,7 @@ const AUTH_STORAGE_KEY = "letti-auth-user";
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_HOST,
+  withCredentials: true,
 });
 
 instance.interceptors.request.use((config) => {

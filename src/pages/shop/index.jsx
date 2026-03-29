@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ContentLoader from "react-content-loader";
 import styles from "./Shop.module.scss";
 import { fetchSets } from "../../redux/slices/setSlice";
-import { addItemToCart } from "../../redux/slices/cartSlice";
+import { addItemToCart, fetchCart } from "../../redux/slices/cartSlice";
 import { SetItem } from "../../componets";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import {
@@ -16,7 +16,6 @@ const LENGTH_OPTIONS = [
   { value: "45-50 cm", label: "45-50 cm" },
   { value: "55-60 cm", label: "55-60 cm" },
 ];
-const COLOR_OPTIONS = ["Red", "Blue", "Yellow"];
 const MIN_QUANTITY = 10;
 const DEFAULT_QUANTITY = 60;
 const MAX_QUANTITY = 65;
@@ -37,9 +36,7 @@ export function Shop() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedLength, setSelectedLength] = useState(LENGTH_OPTIONS[0].value);
   const [selectedQuantity, setSelectedQuantity] = useState(DEFAULT_QUANTITY);
-  const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0]);
   const [selectedImage, setSelectedImage] = useState("");
-  const galleryScrollRef = useRef(null);
 
   useEffect(() => {
     dispatch(fetchSets());
@@ -48,6 +45,10 @@ export function Shop() {
   const categoryTitle = useMemo(() => {
     if (!id) {
       return t("shop.title");
+    }
+
+    if (normalizeCategorySlug(id) === "curls-on-mini-dread" && language === "fi") {
+      return "Kiharat pikku rastalla";
     }
 
     const translationKey = getCategoryTranslationKey(id);
@@ -60,7 +61,7 @@ export function Shop() {
     );
 
     return matchedSet?.category || id;
-  }, [id, sets, t]);
+  }, [id, sets, t, language]);
 
   const filteredSets = useMemo(() => {
     return id
@@ -74,7 +75,6 @@ export function Shop() {
     setSelectedProduct(product);
     setSelectedLength(LENGTH_OPTIONS[0].value);
     setSelectedQuantity(DEFAULT_QUANTITY);
-    setSelectedColor(COLOR_OPTIONS[0]);
     setSelectedImage(product.images?.[0] || product.photo || "");
   };
 
@@ -89,22 +89,7 @@ export function Shop() {
     );
   };
 
-  const scrollGallery = (direction) => {
-    if (!galleryScrollRef.current) {
-      return;
-    }
-
-    const isMobile = window.innerWidth <= 730;
-    const scrollAmount = isMobile ? 140 : 160;
-
-    galleryScrollRef.current.scrollBy({
-      top: isMobile ? 0 : direction * scrollAmount,
-      left: isMobile ? direction * scrollAmount : 0,
-      behavior: "smooth",
-    });
-  };
-
-  const addCurrentProductToCart = () => {
+  const addCurrentProductToCart = async () => {
     if (!selectedProduct) {
       return false;
     }
@@ -121,7 +106,7 @@ export function Shop() {
       Math.max(MIN_QUANTITY, Number(selectedQuantity) || DEFAULT_QUANTITY),
     );
 
-    dispatch(
+    const result = await dispatch(
       addItemToCart({
         productId: selectedProduct.id,
         name: selectedProduct.name,
@@ -133,24 +118,32 @@ export function Shop() {
         strandQuantity,
         setQuantity: 1,
         length: selectedLength,
-        color: selectedColor,
+        color: "",
         category: selectedProduct.category,
       }),
     );
 
-    return true;
+    if (result.error) {
+      alert(result.payload?.error || "Could not add item to cart");
+    }
+
+    if (!result.error) {
+      await dispatch(fetchCart());
+    }
+
+    return !result.error;
   };
 
-  const handleAddToCart = () => {
-    if (addCurrentProductToCart()) {
+  const handleAddToCart = async () => {
+    if (await addCurrentProductToCart()) {
       closeProductModal();
     }
   };
 
-  const handleBuyNow = () => {
-    if (addCurrentProductToCart()) {
+  const handleBuyNow = async () => {
+    if (await addCurrentProductToCart()) {
       closeProductModal();
-      navigate("/cart");
+      navigate("/checkout");
     }
   };
 
@@ -254,24 +247,6 @@ export function Shop() {
                   </div>
                 </div>
 
-                <div className={styles.optionBlock}>
-                  <h3>{t("shop.modal.colors")}</h3>
-                  <div className={styles.lengthOptions}>
-                    {COLOR_OPTIONS.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={
-                          selectedColor === color ? styles.lengthActive : ""
-                        }
-                        onClick={() => setSelectedColor(color)}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 <div className={styles.actionButtons}>
                   <button className={styles.payNowButton} onClick={handleBuyNow}>
                     {t("shop.modal.buyNow")}
@@ -294,15 +269,7 @@ export function Shop() {
 
                 {selectedImages.length > 1 ? (
                   <div className={styles.previewScrollerWrap}>
-                    <button
-                      type="button"
-                      className={`${styles.previewScrollButton} ${styles.previewScrollBack}`}
-                      onClick={() => scrollGallery(-1)}
-                      aria-label="Scroll gallery backward"
-                    >
-                      ‹
-                    </button>
-                    <div className={styles.previewScroller} ref={galleryScrollRef}>
+                    <div className={styles.previewScroller}>
                       {selectedImages.map((image, imageIndex) => (
                         <button
                           key={`${selectedProduct.id}-${imageIndex}`}
@@ -317,14 +284,6 @@ export function Shop() {
                         </button>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      className={`${styles.previewScrollButton} ${styles.previewScrollForward}`}
-                      onClick={() => scrollGallery(1)}
-                      aria-label="Scroll gallery forward"
-                    >
-                      ›
-                    </button>
                   </div>
                 ) : null}
               </div>

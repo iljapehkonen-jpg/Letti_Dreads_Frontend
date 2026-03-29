@@ -13,6 +13,13 @@ export const AVATAR_COLOR_OPTIONS = [
   "#d16aa7",
   "#d97a3f",
   "#5db7d9",
+  "#1f8a70",
+  "#c06c84",
+  "#f28482",
+  "#6c757d",
+  "#f6bd60",
+  "#84a59d",
+  "#355070",
 ];
 
 const loadAvatarColors = () => {
@@ -93,7 +100,7 @@ const normalizeStoredAuth = (saved) => {
   }
 
   return {
-    user: null,
+    user: normalizeUser(saved),
     token: null,
   };
 };
@@ -185,7 +192,7 @@ export const fetchCurrentUser = createAsyncThunk(
       const response = await axios.get("http://127.0.0.1:8000/users/me/");
       return {
         user: normalizeUser(response.data),
-        token: loadStoredAuth().token,
+        token: response.data?.token ?? loadStoredAuth().token,
       };
     } catch (error) {
       return rejectWithValue(error.response?.data || null);

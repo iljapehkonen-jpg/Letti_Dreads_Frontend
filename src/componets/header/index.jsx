@@ -7,9 +7,15 @@ import {
   fetchLogout,
   updateUserAvatarColor,
 } from "../../redux/slices/authSlice";
+import { fetchLatestOrder } from "../../redux/slices/orderSlice";
 import styles from "./Header.module.scss";
 
 const THEME_STORAGE_KEY = "letti-theme";
+const INSTANT_LABELS = {
+  fi: "Valmiit setit",
+  en: "Instock",
+  ru: "Готовые сеты",
+};
 
 const getInitialTheme = () => {
   if (typeof window === "undefined") {
@@ -48,6 +54,7 @@ export function Header() {
   const [isDreadsOpen, setIsDreadsOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isOrderStatusOpen, setIsOrderStatusOpen] = useState(false);
   const [theme, setTheme] = useState(getInitialTheme);
   const menu = useRef();
   const languageMenu = useRef();
@@ -56,6 +63,64 @@ export function Header() {
   const navigate = useNavigate();
   const { language, setLanguage, languages, t } = useLanguage();
   const user = useSelector((state) => state.auth.user);
+  const latestOrder = useSelector((state) => state.orders.latestOrder);
+  const instantLabel =
+    language === "ru"
+      ? "\u0413\u043e\u0442\u043e\u0432\u044b\u0435 \u0441\u0435\u0442\u044b"
+      : language === "fi"
+        ? "Valmiit setit"
+        : "Instock";
+  const faqLabel = language === "ru" ? "Экспертность" : "FAQ";
+  const curlsOnMiniDreadLabel =
+    language === "fi" ? "Kiharat pikku rastalla" : t("header.curlsOnMiniDread");
+  const orderStatusLabels = {
+    fi: {
+      link: "Tilauksen vaihe",
+      title: "Tilauksen vaihe",
+      date: "Tilattu",
+      status: "Vaihe",
+      processing: "Tilauksesi kasitellaan",
+      assembling: "Tilauksesi kootaan",
+      in_transit: "Tilauksesi on matkalla",
+      ready_for_pickup: "Tilauksesi odottaa noutoa",
+      empty: "Ei viela tehtyja tilauksia.",
+    },
+    en: {
+      link: "Order status",
+      title: "Order status",
+      date: "Ordered",
+      status: "Status",
+      processing: "Your order is being processed",
+      assembling: "Your order is being assembled",
+      in_transit: "Your order is on the way",
+      ready_for_pickup: "Your order is ready for pickup",
+      empty: "No orders yet.",
+    },
+    ru: {
+      link: "Стадия заказа",
+      title: "Стадия заказа",
+      date: "Дата заказа",
+      status: "Стадия",
+      processing: "Ваш заказ оформляется",
+      assembling: "Ваш заказ собирается",
+      in_transit: "Ваш заказ в пути",
+      ready_for_pickup: "Ваш заказ ждёт вас на почте",
+      empty: "Пока нет оформленных заказов.",
+    },
+  };
+  const orderLabels = orderStatusLabels[language] || orderStatusLabels.en;
+  const latestOrderDate = latestOrder
+    ? new Intl.DateTimeFormat(
+        language === "ru" ? "ru-RU" : language === "fi" ? "fi-FI" : "en-GB",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ).format(new Date(latestOrder.created_at))
+    : "";
 
   const avatarFallback = useMemo(() => {
     const source = user?.username || user?.email || "";
@@ -72,6 +137,12 @@ export function Header() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchLatestOrder());
+    }
+  }, [dispatch, user]);
 
   const handleClick = (e) => {
     if (menu.current && !menu.current.contains(e.target)) {
@@ -118,6 +189,7 @@ export function Header() {
   const handleLogout = async () => {
     await dispatch(fetchLogout());
     setIsSettingsOpen(false);
+    setIsOrderStatusOpen(false);
     setIsAccountOpen(false);
     setIsVisible(false);
     setIsShopOpen(false);
@@ -278,6 +350,16 @@ export function Header() {
                     className={styles.accountLink}
                     onClick={() => {
                       setIsAccountOpen(false);
+                      setIsOrderStatusOpen(true);
+                    }}
+                  >
+                    {orderLabels.link}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.accountLink}
+                    onClick={() => {
+                      setIsAccountOpen(false);
                       setIsSettingsOpen(true);
                     }}
                   >
@@ -361,21 +443,25 @@ export function Header() {
                   type="button"
                   onClick={() => closeAndNavigate("/shop/curls-on-mini-dread")}
                 >
-                  {t("header.curlsOnMiniDread")}
+                  {curlsOnMiniDreadLabel}
+                </button>
+                <button type="button" onClick={() => closeAndNavigate("/shop/other")}>
+                  {t("header.other")}
                 </button>
               </div>
             ) : null}
           </li>
 
+          <li onClick={() => closeAndNavigate("/instock")}>{instantLabel}</li>
+
           <li onClick={() => closeAndNavigate("/contacts")}>
             {t("header.contacts")}
           </li>
-          <li onClick={() => closeAndNavigate("/faq")}>{t("header.faq")}</li>
+          <li onClick={() => closeAndNavigate("/faq")}>{faqLabel}</li>
           <li onClick={() => closeAndNavigate("/cart")}>{t("header.cart")}</li>
           {!user ? (
             <li onClick={() => closeAndNavigate("/login")}>{t("header.login")}</li>
           ) : null}
-          <li onClick={() => closeAndNavigate("/other")}>{t("header.other")}</li>
         </ul>
       </div>
 
@@ -484,6 +570,44 @@ export function Header() {
           </div>
         </div>
       ) : null}
+
+      {user && isOrderStatusOpen ? (
+        <div
+          className={styles.settingsOverlay}
+          onClick={() => setIsOrderStatusOpen(false)}
+        >
+          <div
+            className={styles.orderStatusModal}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.settingsClose}
+              onClick={() => setIsOrderStatusOpen(false)}
+            >
+              ×
+            </button>
+            <h2>{orderLabels.title}</h2>
+            {latestOrder ? (
+              <div className={styles.orderStatusInfo}>
+                <div className={styles.orderStatusItem}>
+                  <span>{orderLabels.date}</span>
+                  <strong>{latestOrderDate}</strong>
+                </div>
+                <div className={styles.orderStatusItem}>
+                  <span>{orderLabels.status}</span>
+                  <strong>
+                    {orderLabels[latestOrder.status] || latestOrder.status_label}
+                  </strong>
+                </div>
+              </div>
+            ) : (
+              <p className={styles.orderStatusEmpty}>{orderLabels.empty}</p>
+            )}
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
+

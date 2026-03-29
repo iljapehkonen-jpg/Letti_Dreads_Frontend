@@ -12,6 +12,8 @@ export function SetItem({
   hideDetails = false,
   className = "",
 }) {
+  const baseClassName = `${styles.setItem} ${hideDetails ? styles.imageOnly : styles.withDetails} ${className}`.trim();
+
   const content = (
     <>
       <img src={img} alt={name || "set image"} />
@@ -25,7 +27,7 @@ export function SetItem({
 
   if (to) {
     return (
-      <Link to={to} className={`${styles.setItem} ${className}`.trim()}>
+      <Link to={to} className={baseClassName}>
         {content}
       </Link>
     );
@@ -35,7 +37,7 @@ export function SetItem({
     return (
       <button
         type="button"
-        className={`${styles.setItem} ${styles.setItemButton} ${className}`.trim()}
+        className={`${baseClassName} ${styles.setItemButton}`.trim()}
         onClick={onClick}
       >
         {content}
@@ -43,5 +45,5 @@ export function SetItem({
     );
   }
 
-  return <div className={`${styles.setItem} ${className}`.trim()}>{content}</div>;
+  return <div className={baseClassName}>{content}</div>;
 }
