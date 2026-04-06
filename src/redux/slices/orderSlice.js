@@ -12,7 +12,7 @@ export const fetchLatestOrder = createAsyncThunk(
   "orders/fetchLatestOrder",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/cart/orders/latest/");
+      const response = await axios.get("/cart/orders/latest/");
       return response.data?.order ?? null;
     } catch (error) {
       return rejectWithValue(error.response?.data || { error: error.message });
@@ -24,7 +24,7 @@ export const createOrder = createAsyncThunk(
   "orders/createOrder",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/cart/orders/create/", payload);
+      const response = await axios.post("/cart/orders/create/", payload);
       return response.data?.order ?? null;
     } catch (error) {
       return rejectWithValue(error.response?.data || { error: error.message });

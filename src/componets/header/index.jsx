@@ -9,12 +9,86 @@ import {
 } from "../../redux/slices/authSlice";
 import { fetchLatestOrder } from "../../redux/slices/orderSlice";
 import styles from "./Header.module.scss";
+import { getCustomSetContent } from "../../pages/custom_set/content.js";
 
 const THEME_STORAGE_KEY = "letti-theme";
-const INSTANT_LABELS = {
-  fi: "Valmiit setit",
-  en: "Instock",
-  ru: "Готовые сеты",
+const THEMES = [
+  "light",
+  "dark",
+  "burgundy",
+  "olive",
+  "forest",
+  "sapphire",
+  "plum",
+  "terracotta",
+  "graphite",
+];
+const DATE_LOCALES = {
+  fi: "fi-FI",
+  en: "en-GB",
+  ru: "ru-RU",
+  de: "de-DE",
+  fr: "fr-FR",
+  it: "it-IT",
+  el: "el-GR",
+  es: "es-ES",
+  et: "et-EE",
+  lv: "lv-LV",
+  lt: "lt-LT",
+  pl: "pl-PL",
+};
+const SETTINGS_TEXT = {
+  fi: { settings: "Asetukset", theme: "Teema", lightTheme: "Vaalea", darkTheme: "Tumma", language: "Kieli", security: "Turvallisuus", passwordHidden: "Salasanaa ei voi näyttää turvallisuussyistä.", avatarColor: "Avatarin väri", logout: "Kirjaudu ulos" },
+  en: { settings: "Settings", theme: "Theme", lightTheme: "Light", darkTheme: "Dark", language: "Language", security: "Security", passwordHidden: "Password cannot be shown for security reasons.", avatarColor: "Avatar color", logout: "Log out" },
+  ru: { settings: "Настройки", theme: "Тема", lightTheme: "Светлая", darkTheme: "Тёмная", language: "Язык", security: "Безопасность", passwordHidden: "Пароль нельзя показать по соображениям безопасности.", avatarColor: "Цвет аватарки", logout: "Выйти" },
+  de: { settings: "Einstellungen", theme: "Thema", lightTheme: "Hell", darkTheme: "Dunkel", language: "Sprache", security: "Sicherheit", passwordHidden: "Das Passwort kann aus Sicherheitsgründen nicht angezeigt werden.", avatarColor: "Avatarfarbe", logout: "Abmelden" },
+  fr: { settings: "Paramètres", theme: "Thème", lightTheme: "Clair", darkTheme: "Sombre", language: "Langue", security: "Sécurité", passwordHidden: "Le mot de passe ne peut pas être affiché pour des raisons de sécurité.", avatarColor: "Couleur de l'avatar", logout: "Déconnexion" },
+  it: { settings: "Impostazioni", theme: "Tema", lightTheme: "Chiaro", darkTheme: "Scuro", language: "Lingua", security: "Sicurezza", passwordHidden: "La password non può essere mostrata per motivi di sicurezza.", avatarColor: "Colore avatar", logout: "Esci" },
+  el: { settings: "Ρυθμίσεις", theme: "Θέμα", lightTheme: "Ανοιχτό", darkTheme: "Σκούρο", language: "Γλώσσα", security: "Ασφάλεια", passwordHidden: "Ο κωδικός δεν μπορεί να εμφανιστεί για λόγους ασφαλείας.", avatarColor: "Χρώμα avatar", logout: "Αποσύνδεση" },
+  es: { settings: "Ajustes", theme: "Tema", lightTheme: "Claro", darkTheme: "Oscuro", language: "Idioma", security: "Seguridad", passwordHidden: "La contraseña no puede mostrarse por motivos de seguridad.", avatarColor: "Color del avatar", logout: "Cerrar sesión" },
+  et: { settings: "Seaded", theme: "Teema", lightTheme: "Hele", darkTheme: "Tume", language: "Keel", security: "Turvalisus", passwordHidden: "Parooli ei saa turvalisuse tõttu näidata.", avatarColor: "Avatari värv", logout: "Logi välja" },
+  lv: { settings: "Iestatījumi", theme: "Tēma", lightTheme: "Gaiša", darkTheme: "Tumša", language: "Valoda", security: "Drošība", passwordHidden: "Paroli nevar parādīt drošības dēļ.", avatarColor: "Avatara krāsa", logout: "Iziet" },
+  lt: { settings: "Nustatymai", theme: "Tema", lightTheme: "Šviesi", darkTheme: "Tamsi", language: "Kalba", security: "Saugumas", passwordHidden: "Slaptažodis negali būti rodomas saugumo sumetimais.", avatarColor: "Avataro spalva", logout: "Atsijungti" },
+  pl: { settings: "Ustawienia", theme: "Motyw", lightTheme: "Jasny", darkTheme: "Ciemny", language: "Język", security: "Bezpieczeństwo", passwordHidden: "Hasło nie może być pokazane ze względów bezpieczeństwa.", avatarColor: "Kolor awatara", logout: "Wyloguj się" },
+};
+const THEME_LABELS = {
+  fi: { light: "Vaalea", dark: "Tumma", burgundy: "Viininpunainen", olive: "Oliivi" },
+  en: {
+    light: "Light",
+    dark: "Dark",
+    burgundy: "Burgundy",
+    olive: "Olive",
+    forest: "Forest",
+    sapphire: "Sapphire",
+    plum: "Plum",
+    terracotta: "Terracotta",
+    graphite: "Graphite",
+  },
+  ru: { light: "Ð¡Ð²ÐµÑ‚Ð»Ð°Ñ", dark: "Ð¢Ñ‘Ð¼Ð½Ð°Ñ", burgundy: "Ð‘Ð¾Ñ€Ð´Ð¾Ð²Ð°Ñ", olive: "ÐžÐ»Ð¸Ð²ÐºÐ¾Ð²Ð°Ñ" },
+  de: { light: "Hell", dark: "Dunkel", burgundy: "Bordeaux", olive: "Oliv" },
+  fr: { light: "Clair", dark: "Sombre", burgundy: "Bordeaux", olive: "Olive" },
+  it: { light: "Chiaro", dark: "Scuro", burgundy: "Bordeaux", olive: "Oliva" },
+  el: { light: "Î‘Î½Î¿Î¹Ï‡Ï„ÏŒ", dark: "Î£ÎºÎ¿ÏÏÎ¿", burgundy: "ÎœÏ€Î¿ÏÎ½Ï„ÏŒ", olive: "Î›Î±Î´Î¯" },
+  es: { light: "Claro", dark: "Oscuro", burgundy: "Burdeos", olive: "Oliva" },
+  et: { light: "Hele", dark: "Tume", burgundy: "Bordoo", olive: "Oliiv" },
+  lv: { light: "GaiÅ¡a", dark: "TumÅ¡a", burgundy: "Bordo", olive: "OlÄ«vu" },
+  lt: { light: "Å viesi", dark: "Tamsi", burgundy: "Bordo", olive: "AlyvuogiÅ³" },
+  pl: { light: "Jasny", dark: "Ciemny", burgundy: "Bordowy", olive: "Oliwkowy" },
+};
+
+const ORDER_STATUS_TEXT = {
+  fi: { link: "Tilauksen vaihe", title: "Tilauksen vaihe", date: "Tilattu", status: "Vaihe", processing: "Tilauksesi käsitellään", assembling: "Tilauksesi kootaan", in_transit: "Tilauksesi on matkalla", ready_for_pickup: "Tilauksesi odottaa noutoa", empty: "Ei vielä tehtyjä tilauksia." },
+  en: { link: "Order status", title: "Order status", date: "Ordered", status: "Status", processing: "Your order is being processed", assembling: "Your order is being assembled", in_transit: "Your order is on the way", ready_for_pickup: "Your order is ready for pickup", empty: "No orders yet." },
+  ru: { link: "Стадия заказа", title: "Стадия заказа", date: "Дата заказа", status: "Стадия", processing: "Ваш заказ оформляется", assembling: "Ваш заказ собирается", in_transit: "Ваш заказ в пути", ready_for_pickup: "Ваш заказ ждёт вас на почте", empty: "Пока нет оформленных заказов." },
+  de: { link: "Bestellstatus", title: "Bestellstatus", date: "Bestellt", status: "Status", processing: "Ihre Bestellung wird bearbeitet", assembling: "Ihre Bestellung wird zusammengestellt", in_transit: "Ihre Bestellung ist unterwegs", ready_for_pickup: "Ihre Bestellung ist zur Abholung bereit", empty: "Noch keine Bestellungen." },
+  fr: { link: "Statut de commande", title: "Statut de commande", date: "Commande passée", status: "Statut", processing: "Votre commande est en cours de traitement", assembling: "Votre commande est en cours de préparation", in_transit: "Votre commande est en route", ready_for_pickup: "Votre commande est prête au retrait", empty: "Pas encore de commandes." },
+  it: { link: "Stato dell'ordine", title: "Stato dell'ordine", date: "Ordinato", status: "Stato", processing: "Il tuo ordine è in elaborazione", assembling: "Il tuo ordine è in preparazione", in_transit: "Il tuo ordine è in viaggio", ready_for_pickup: "Il tuo ordine è pronto per il ritiro", empty: "Nessun ordine ancora." },
+  el: { link: "Κατάσταση παραγγελίας", title: "Κατάσταση παραγγελίας", date: "Παραγγέλθηκε", status: "Κατάσταση", processing: "Η παραγγελία σας επεξεργάζεται", assembling: "Η παραγγελία σας ετοιμάζεται", in_transit: "Η παραγγελία σας είναι καθ' οδόν", ready_for_pickup: "Η παραγγελία σας είναι έτοιμη για παραλαβή", empty: "Δεν υπάρχουν παραγγελίες ακόμα." },
+  es: { link: "Estado del pedido", title: "Estado del pedido", date: "Pedido realizado", status: "Estado", processing: "Tu pedido se está procesando", assembling: "Tu pedido se está preparando", in_transit: "Tu pedido está en camino", ready_for_pickup: "Tu pedido está listo para recoger", empty: "Aún no hay pedidos." },
+  et: { link: "Tellimuse staatus", title: "Tellimuse staatus", date: "Tellitud", status: "Staatus", processing: "Teie tellimust töödeldakse", assembling: "Teie tellimust komplekteeritakse", in_transit: "Teie tellimus on teel", ready_for_pickup: "Teie tellimus on valmis järele tulekuks", empty: "Tellimusi veel pole." },
+  lv: { link: "Pasūtījuma statuss", title: "Pasūtījuma statuss", date: "Pasūtīts", status: "Statuss", processing: "Jūsu pasūtījums tiek apstrādāts", assembling: "Jūsu pasūtījums tiek komplektēts", in_transit: "Jūsu pasūtījums ir ceļā", ready_for_pickup: "Jūsu pasūtījums ir gatavs saņemšanai", empty: "Vēl nav pasūtījumu." },
+  lt: { link: "Užsakymo būsena", title: "Užsakymo būsena", date: "Užsakyta", status: "Būsena", processing: "Jūsų užsakymas apdorojamas", assembling: "Jūsų užsakymas komplektuojamas", in_transit: "Jūsų užsakymas pakeliui", ready_for_pickup: "Jūsų užsakymas paruoštas atsiėmimui", empty: "Dar nėra užsakymų." },
+  pl: { link: "Status zamówienia", title: "Status zamówienia", date: "Zamówiono", status: "Status", processing: "Twoje zamówienie jest przetwarzane", assembling: "Twoje zamówienie jest kompletowane", in_transit: "Twoje zamówienie jest w drodze", ready_for_pickup: "Twoje zamówienie jest gotowe do odbioru", empty: "Brak zamówień." },
 };
 
 const getInitialTheme = () => {
@@ -23,7 +97,7 @@ const getInitialTheme = () => {
   }
 
   const saved = localStorage.getItem(THEME_STORAGE_KEY);
-  return saved === "dark" ? "dark" : "light";
+  return THEMES.includes(saved) ? saved : "light";
 };
 
 const getAvatarTextColor = (hex) => {
@@ -57,6 +131,7 @@ export function Header() {
   const [isOrderStatusOpen, setIsOrderStatusOpen] = useState(false);
   const [theme, setTheme] = useState(getInitialTheme);
   const menu = useRef();
+  const nav = useRef();
   const languageMenu = useRef();
   const accountMenu = useRef();
   const dispatch = useDispatch();
@@ -64,54 +139,34 @@ export function Header() {
   const { language, setLanguage, languages, t } = useLanguage();
   const user = useSelector((state) => state.auth.user);
   const latestOrder = useSelector((state) => state.orders.latestOrder);
+  const settingsText = SETTINGS_TEXT[language] || SETTINGS_TEXT.en;
+  const themeLabels =
+    language === "ru"
+      ? {
+          light: "\u0421\u0432\u0435\u0442\u043b\u0430\u044f",
+          dark: "\u0422\u0451\u043c\u043d\u0430\u044f",
+          burgundy: "\u0411\u043e\u0440\u0434\u043e\u0432\u0430\u044f",
+          olive: "\u041e\u043b\u0438\u0432\u043a\u043e\u0432\u0430\u044f",
+          forest: "\u041b\u0435\u0441\u043d\u0430\u044f",
+          sapphire: "\u0421\u0430\u043f\u0444\u0438\u0440\u043e\u0432\u0430\u044f",
+          plum: "\u0421\u043b\u0438\u0432\u043e\u0432\u0430\u044f",
+          terracotta: "\u0422\u0435\u0440\u0440\u0430\u043a\u043e\u0442\u043e\u0432\u0430\u044f",
+          graphite: "\u0413\u0440\u0430\u0444\u0438\u0442\u043e\u0432\u0430\u044f",
+        }
+      : THEME_LABELS[language] || THEME_LABELS.en;
   const instantLabel =
     language === "ru"
       ? "\u0413\u043e\u0442\u043e\u0432\u044b\u0435 \u0441\u0435\u0442\u044b"
       : language === "fi"
         ? "Valmiit setit"
         : "Instock";
-  const faqLabel = language === "ru" ? "Экспертность" : "FAQ";
-  const curlsOnMiniDreadLabel =
-    language === "fi" ? "Kiharat pikku rastalla" : t("header.curlsOnMiniDread");
-  const orderStatusLabels = {
-    fi: {
-      link: "Tilauksen vaihe",
-      title: "Tilauksen vaihe",
-      date: "Tilattu",
-      status: "Vaihe",
-      processing: "Tilauksesi kasitellaan",
-      assembling: "Tilauksesi kootaan",
-      in_transit: "Tilauksesi on matkalla",
-      ready_for_pickup: "Tilauksesi odottaa noutoa",
-      empty: "Ei viela tehtyja tilauksia.",
-    },
-    en: {
-      link: "Order status",
-      title: "Order status",
-      date: "Ordered",
-      status: "Status",
-      processing: "Your order is being processed",
-      assembling: "Your order is being assembled",
-      in_transit: "Your order is on the way",
-      ready_for_pickup: "Your order is ready for pickup",
-      empty: "No orders yet.",
-    },
-    ru: {
-      link: "Стадия заказа",
-      title: "Стадия заказа",
-      date: "Дата заказа",
-      status: "Стадия",
-      processing: "Ваш заказ оформляется",
-      assembling: "Ваш заказ собирается",
-      in_transit: "Ваш заказ в пути",
-      ready_for_pickup: "Ваш заказ ждёт вас на почте",
-      empty: "Пока нет оформленных заказов.",
-    },
-  };
-  const orderLabels = orderStatusLabels[language] || orderStatusLabels.en;
+  const faqLabel = t("header.faq");
+  const curlsOnMiniDreadLabel = t("header.curlsOnMiniDread");
+  const orderLabels = ORDER_STATUS_TEXT[language] || ORDER_STATUS_TEXT.en;
+  const customSetContent = getCustomSetContent(language);
   const latestOrderDate = latestOrder
     ? new Intl.DateTimeFormat(
-        language === "ru" ? "ru-RU" : language === "fi" ? "fi-FI" : "en-GB",
+        DATE_LOCALES[language] || DATE_LOCALES.en,
         {
           day: "2-digit",
           month: "2-digit",
@@ -121,6 +176,9 @@ export function Header() {
         }
       ).format(new Date(latestOrder.created_at))
     : "";
+  const resolvedInstantLabel = t("header.instock");
+  const resolvedFaqLabel = t("header.faq");
+  const resolvedCurlsOnMiniDreadLabel = t("header.curlsOnMiniDread");
 
   const avatarFallback = useMemo(() => {
     const source = user?.username || user?.email || "";
@@ -145,13 +203,22 @@ export function Header() {
   }, [dispatch, user]);
 
   const handleClick = (e) => {
+    if (nav.current && nav.current.contains(e.target)) {
+      return;
+    }
+
     if (menu.current && !menu.current.contains(e.target)) {
       setIsVisible(false);
       setIsShopOpen(false);
       setIsDreadsOpen(false);
     }
 
-    if (languageMenu.current && !languageMenu.current.contains(e.target)) {
+    const clickedInsideDrawerMenu = menu.current && menu.current.contains(e.target);
+    if (
+      languageMenu.current &&
+      !languageMenu.current.contains(e.target) &&
+      !clickedInsideDrawerMenu
+    ) {
       setIsLanguageOpen(false);
     }
 
@@ -167,6 +234,7 @@ export function Header() {
 
   const closeAndNavigate = (path) => {
     setIsVisible(false);
+    setIsLanguageOpen(false);
     setIsShopOpen(false);
     setIsDreadsOpen(false);
     navigate(path);
@@ -200,31 +268,17 @@ export function Header() {
   return (
     <>
       <div className={styles.header}>
-        <div className={styles.nav}>
+        <div className={styles.nav} ref={nav}>
           <button
+            type="button"
+            className={`${styles.menuToggle} ${isVisible ? styles.menuToggleOpen : ""}`}
             onClick={() => setIsVisible((prev) => !prev)}
             aria-label={t("header.menu")}
+            aria-expanded={isVisible}
           >
-            <svg
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H3C2.44772 7 2 6.55228 2 6Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M2 12.0322C2 11.4799 2.44772 11.0322 3 11.0322H21C21.5523 11.0322 22 11.4799 22 12.0322C22 12.5845 21.5523 13.0322 21 13.0322H3C2.44772 13.0322 2 12.5845 2 12.0322Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M3 17.0645C2.44772 17.0645 2 17.5122 2 18.0645C2 18.6167 2.44772 19.0645 3 19.0645H21C21.5523 19.0645 22 18.6167 22 18.0645C22 17.5122 21.5523 17.0645 21 17.0645H3Z"
-                fill="#ffffff"
-              />
-            </svg>
+            <span className={styles.menuToggleBar} />
+            <span className={styles.menuToggleBar} />
+            <span className={styles.menuToggleBar} />
           </button>
         </div>
 
@@ -246,6 +300,29 @@ export function Header() {
         </div>
 
         <div className={styles.menu}>
+          <button onClick={() => navigate("/cart")} aria-label={t("header.cart")}>
+            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <g data-name="1" id="_1">
+                <path
+                  d="M397.78,316H192.65A15,15,0,0,1,178,304.33L143.46,153.85a15,15,0,0,1,14.62-18.36H432.35A15,15,0,0,1,447,153.85L412.4,304.33A15,15,0,0,1,397.78,316ZM204.59,286H385.84l27.67-120.48H176.91Z"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M222,450a57.48,57.48,0,1,1,57.48-57.48A57.54,57.54,0,0,1,222,450Zm0-84.95a27.48,27.48,0,1,0,27.48,27.47A27.5,27.5,0,0,0,222,365.05Z"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M368.42,450a57.48,57.48,0,1,1,57.48-57.48A57.54,57.54,0,0,1,368.42,450Zm0-84.95a27.48,27.48,0,1,0,27.48,27.47A27.5,27.5,0,0,0,368.42,365.05Z"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M158.08,165.49a15,15,0,0,1-14.23-10.26L118.14,78H70.7a15,15,0,1,1,0-30H129a15,15,0,0,1,14.23,10.26l29.13,87.49a15,15,0,0,1-14.23,19.74Z"
+                  fill="#ffffff"
+                />
+              </g>
+            </svg>
+          </button>
+
           <div className={styles.langMenu} ref={languageMenu}>
             <button
               type="button"
@@ -269,29 +346,6 @@ export function Header() {
               </div>
             ) : null}
           </div>
-
-          <button onClick={() => navigate("/cart")} aria-label={t("header.cart")}>
-            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-              <g data-name="1" id="_1">
-                <path
-                  d="M397.78,316H192.65A15,15,0,0,1,178,304.33L143.46,153.85a15,15,0,0,1,14.62-18.36H432.35A15,15,0,0,1,447,153.85L412.4,304.33A15,15,0,0,1,397.78,316ZM204.59,286H385.84l27.67-120.48H176.91Z"
-                  fill="#ffffff"
-                />
-                <path
-                  d="M222,450a57.48,57.48,0,1,1,57.48-57.48A57.54,57.54,0,0,1,222,450Zm0-84.95a27.48,27.48,0,1,0,27.48,27.47A27.5,27.5,0,0,0,222,365.05Z"
-                  fill="#ffffff"
-                />
-                <path
-                  d="M368.42,450a57.48,57.48,0,1,1,57.48-57.48A57.54,57.54,0,0,1,368.42,450Zm0-84.95a27.48,27.48,0,1,0,27.48,27.47A27.5,27.5,0,0,0,368.42,365.05Z"
-                  fill="#ffffff"
-                />
-                <path
-                  d="M158.08,165.49a15,15,0,0,1-14.23-10.26L118.14,78H70.7a15,15,0,1,1,0-30H129a15,15,0,0,1,14.23,10.26l29.13,87.49a15,15,0,0,1-14.23,19.74Z"
-                  fill="#ffffff"
-                />
-              </g>
-            </svg>
-          </button>
 
           <div className={styles.accountMenu} ref={accountMenu}>
             <button
@@ -363,7 +417,7 @@ export function Header() {
                       setIsSettingsOpen(true);
                     }}
                   >
-                    {t("header.settings")}
+                    {settingsText.settings}
                   </button>
                 </div>
 
@@ -375,13 +429,27 @@ export function Header() {
                   <span className={styles.logoutIcon} aria-hidden="true">
                     ↪
                   </span>
-                  <span>{t("header.logout")}</span>
+                  <span>{settingsText.logout}</span>
                 </button>
               </div>
             ) : null}
           </div>
         </div>
       </div>
+
+      {isVisible ? (
+        <button
+          type="button"
+          className={styles.menuBackdrop}
+          onClick={() => {
+            setIsVisible(false);
+            setIsLanguageOpen(false);
+            setIsShopOpen(false);
+            setIsDreadsOpen(false);
+          }}
+          aria-label={t("header.menu")}
+        />
+      ) : null}
 
       <div
         className={`${styles.dropMenu} ${isVisible ? styles.visible : ""}`}
@@ -443,7 +511,10 @@ export function Header() {
                   type="button"
                   onClick={() => closeAndNavigate("/shop/curls-on-mini-dread")}
                 >
-                  {curlsOnMiniDreadLabel}
+                  {resolvedCurlsOnMiniDreadLabel}
+                </button>
+                <button type="button" onClick={() => closeAndNavigate("/custom-set")}>
+                  {customSetContent.navLabel}
                 </button>
                 <button type="button" onClick={() => closeAndNavigate("/shop/other")}>
                   {t("header.other")}
@@ -452,16 +523,31 @@ export function Header() {
             ) : null}
           </li>
 
-          <li onClick={() => closeAndNavigate("/instock")}>{instantLabel}</li>
+          <li onClick={() => closeAndNavigate("/instock")}>{resolvedInstantLabel}</li>
 
           <li onClick={() => closeAndNavigate("/contacts")}>
             {t("header.contacts")}
           </li>
-          <li onClick={() => closeAndNavigate("/faq")}>{faqLabel}</li>
+          <li onClick={() => closeAndNavigate("/faq")}>{resolvedFaqLabel}</li>
           <li onClick={() => closeAndNavigate("/cart")}>{t("header.cart")}</li>
           {!user ? (
             <li onClick={() => closeAndNavigate("/login")}>{t("header.login")}</li>
           ) : null}
+          <li className={styles.drawerLanguageSection}>
+            <div className={styles.drawerLanguageLabel}>{settingsText.language}</div>
+            <div className={styles.drawerLanguageGrid}>
+              {languages.map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  className={language === code ? styles.langActive : ""}
+                  onClick={() => selectLanguage(code)}
+                >
+                  {t(`common.languages.${code}`)}
+                </button>
+              ))}
+            </div>
+          </li>
         </ul>
       </div>
 
@@ -501,27 +587,23 @@ export function Header() {
 
             <div className={styles.settingsGrid}>
               <section className={styles.settingsCard}>
-                <h3>{t("header.theme")}</h3>
+                <h3>{settingsText.theme}</h3>
                 <div className={styles.choiceRow}>
-                  <button
-                    type="button"
-                    className={theme === "light" ? styles.choiceActive : styles.choiceButton}
-                    onClick={() => setTheme("light")}
-                  >
-                    {t("header.lightTheme")}
-                  </button>
-                  <button
-                    type="button"
-                    className={theme === "dark" ? styles.choiceActive : styles.choiceButton}
-                    onClick={() => setTheme("dark")}
-                  >
-                    {t("header.darkTheme")}
-                  </button>
+                  {THEMES.map((themeOption) => (
+                    <button
+                      key={themeOption}
+                      type="button"
+                      className={theme === themeOption ? styles.choiceActive : styles.choiceButton}
+                      onClick={() => setTheme(themeOption)}
+                    >
+                      {themeLabels[themeOption] || THEME_LABELS.en[themeOption] || themeOption}
+                    </button>
+                  ))}
                 </div>
               </section>
 
               <section className={styles.settingsCard}>
-                <h3>{t("common.language")}</h3>
+                <h3>{settingsText.language}</h3>
                 <div className={styles.choiceRow}>
                   {languages.map((code) => (
                     <button
@@ -539,12 +621,12 @@ export function Header() {
               </section>
 
               <section className={styles.settingsCard}>
-                <h3>{t("header.security")}</h3>
-                <p className={styles.securityNote}>{t("header.passwordHidden")}</p>
+                <h3>{settingsText.security}</h3>
+                <p className={styles.securityNote}>{settingsText.passwordHidden}</p>
               </section>
 
               <section className={styles.settingsCard}>
-                <h3>{t("header.avatarColor")}</h3>
+                <h3>{settingsText.avatarColor}</h3>
                 <div className={styles.colorGrid}>
                   {AVATAR_COLOR_OPTIONS.map((color) => (
                     <button
@@ -565,7 +647,7 @@ export function Header() {
               className={styles.settingsLogout}
               onClick={handleLogout}
             >
-              {t("header.logout")}
+              {settingsText.logout}
             </button>
           </div>
         </div>
@@ -610,4 +692,5 @@ export function Header() {
     </>
   );
 }
+
 

@@ -1,22 +1,73 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Home.module.scss";
 import { SetItem } from "../../componets";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import axios from "../../axios.js";
+import { getCustomSetContent } from "../custom_set/content.js";
 
 const INSTAGRAM_URL = "https://www.instagram.com/letti_dreads/";
 const INSTAGRAM_LABELS = {
   fi: "Lisää kuvia Instagramissa",
   en: "More photos on Instagram",
   ru: "Больше фотографий в Instagram",
+  de: "Mehr Fotos auf Instagram",
+  fr: "Plus de photos sur Instagram",
+  it: "Altre foto su Instagram",
+  el: "Περισσότερες φωτογραφίες στο Instagram",
+  es: "Más fotos en Instagram",
+  et: "Rohkem fotosid Instagramis",
+  lv: "Vairāk foto Instagram",
+  lt: "Daugiau nuotraukų Instagram",
+  pl: "Więcej zdjęć na Instagramie",
+};
+
+const LIGHTBOX_TEXT = {
+  fi: { previous: "Edellinen kuva", next: "Seuraava kuva", close: "Sulje esikatselu" },
+  en: { previous: "Previous image", next: "Next image", close: "Close preview" },
+  ru: { previous: "Предыдущее фото", next: "Следующее фото", close: "Закрыть просмотр" },
+  de: { previous: "Vorheriges Bild", next: "Nächstes Bild", close: "Vorschau schließen" },
+  fr: { previous: "Image précédente", next: "Image suivante", close: "Fermer l'aperçu" },
+  it: { previous: "Immagine precedente", next: "Immagine successiva", close: "Chiudi anteprima" },
+  el: { previous: "Προηγούμενη εικόνα", next: "Επόμενη εικόνα", close: "Κλείσιμο προεπισκόπησης" },
+  es: { previous: "Imagen anterior", next: "Imagen siguiente", close: "Cerrar vista previa" },
+  et: { previous: "Eelmine pilt", next: "Järgmine pilt", close: "Sulge eelvaade" },
+  lv: { previous: "Iepriekšējais attēls", next: "Nākamais attēls", close: "Aizvērt priekšskatījumu" },
+  lt: { previous: "Ankstesnis vaizdas", next: "Kitas vaizdas", close: "Uždaryti peržiūrą" },
+  pl: { previous: "Poprzednie zdjęcie", next: "Następne zdjęcie", close: "Zamknij podgląd" },
+};
+
+const ABOUT_EXTRA = {
+  fi:
+    "Luomme kampauksia huolella, turvallisesti ja yksilöllisesti. Jokainen setti suunnitellaan niin, että se toimii kauniisti juuri sinun hiustyypillesi ja näyttää viimeistellyltä arjessa sekä juhlahetkissä.",
+  en:
+    "We create each set with care, safety and a personal approach. Every look is designed to suit your hair type beautifully and feel polished in everyday life as well as special moments.",
+  ru:
+    "Мы создаём комплекты бережно, безопасно и индивидуально. Каждый образ подбирается так, чтобы он красиво подходил именно вашему типу волос и хорошо смотрелся и в повседневной жизни, и в особенных случаях.",
+  de:
+    "Wir gestalten jedes Set sorgfältig, sicher und individuell. Jeder Look wird so geplant, dass er zu deinem Haartyp passt und sowohl im Alltag als auch zu besonderen Anlässen harmonisch aussieht.",
+  fr:
+    "Nous créons chaque set avec soin, en toute sécurité et de manière personnalisée. Chaque look est pensé pour s'adapter à ton type de cheveux et rester beau au quotidien comme lors des occasions spéciales.",
+  it:
+    "Creiamo ogni set con cura, sicurezza e un approccio personale. Ogni look è pensato per adattarsi al tuo tipo di capelli e apparire curato sia nella vita quotidiana sia nei momenti speciali.",
+  el:
+    "Δημιουργούμε κάθε σετ με φροντίδα, ασφάλεια και προσωπική προσέγγιση. Κάθε look σχεδιάζεται ώστε να ταιριάζει όμορφα στον τύπο των μαλλιών σου και να δείχνει προσεγμένο στην καθημερινότητα και στις ξεχωριστές στιγμές.",
+  es:
+    "Creamos cada set con cuidado, seguridad y un enfoque personal. Cada look se diseña para adaptarse bien a tu tipo de cabello y verse cuidado tanto en la vida diaria como en ocasiones especiales.",
+  et:
+    "Loome iga komplekti hoolikalt, turvaliselt ja personaalselt. Iga look kujundatakse nii, et see sobiks sinu juuksetüübiga ning näeks hea välja nii igapäevaselt kui ka erilistel hetkedel.",
+  lv:
+    "Mēs veidojam katru komplektu rūpīgi, droši un individuāli. Katrs tēls tiek plānots tā, lai tas skaisti piestāvētu tavam matu tipam un labi izskatītos gan ikdienā, gan īpašos brīžos.",
+  lt:
+    "Kiekvieną rinkinį kuriame kruopščiai, saugiai ir individualiai. Kiekvienas įvaizdis pritaikomas tavo plaukų tipui, kad gražiai atrodytų tiek kasdienybėje, tiek ypatingomis progomis.",
+  pl:
+    "Tworzymy każdy zestaw z troską, bezpiecznie i indywidualnie. Każdy look projektujemy tak, aby pasował do Twojego typu włosów i wyglądał dopracowanie zarówno na co dzień, jak i przy wyjątkowych okazjach.",
 };
 
 export function Home() {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const curlsOnMiniDreadLabel =
-    language === "fi" ? "Kiharat pikku rastalla" : t("shop.categories.curls-on-mini-dread");
+  const aboutExtra = ABOUT_EXTRA[language] || ABOUT_EXTRA.en;
   const imgInterval = 12;
   const imgs = ["/img_slider1.png", "/img_slider2.png"];
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
@@ -29,8 +80,8 @@ export function Home() {
     },
     {
       img: "/homNav/Kiharat.jpg",
-      name: t("shop.categories.curls"),
-      to: "/shop/curls",
+      name: t("header.curls"),
+      to: "/shop/curls-on-mini-dread",
     },
     {
       img: "/homNav/Letit.jpg",
@@ -44,8 +95,8 @@ export function Home() {
     },
     {
       img: "/dreads_card/prototyp1.jpg",
-      name: curlsOnMiniDreadLabel,
-      to: "/shop/curls-on-mini-dread",
+      name: t("shop.categories.other"),
+      to: "/shop/other",
     },
   ];
   const reviewListRef = useRef(null);
@@ -58,11 +109,13 @@ export function Home() {
   const galleryLightboxImages = imgVisible.slice(1);
   const galleryPreviewImage = imgVisible[0] || "/dreads_card/prototyp1.jpg";
   const instagramLabel = INSTAGRAM_LABELS[language] || INSTAGRAM_LABELS.en;
+  const lightboxText = LIGHTBOX_TEXT[language] || LIGHTBOX_TEXT.en;
+  const customSetContent = getCustomSetContent(language);
 
   useEffect(() => {
     const loadHomeMedia = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/products/home-media/");
+        const response = await axios.get("/products/home-media/");
         setGalleryImages(response.data?.gallery ?? []);
         setReviewImages(response.data?.reviews ?? []);
       } catch {
@@ -120,15 +173,11 @@ export function Home() {
   };
 
   const showPrevLightboxImage = () => {
-    setLightboxIndex((prev) =>
-      prev === 0 ? lightboxImages.length - 1 : prev - 1,
-    );
+    setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1));
   };
 
   const showNextLightboxImage = () => {
-    setLightboxIndex((prev) =>
-      prev === lightboxImages.length - 1 ? 0 : prev + 1,
-    );
+    setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -139,8 +188,7 @@ export function Home() {
           style={{
             backgroundImage: `url(${imgs[currentHeroImage]})`,
             backgroundSize: "cover",
-            backgroundPosition:
-              currentHeroImage === 1 ? "center center" : "center top",
+            backgroundPosition: currentHeroImage === 1 ? "center center" : "center top",
           }}
         >
           <h2>{t("home.heroTitle")}</h2>
@@ -167,7 +215,37 @@ export function Home() {
         <div className={styles.aboutWe}>
           <h2>{t("home.aboutTitle")}</h2>
           <p>{t("home.aboutText")}</p>
+          <p>{aboutExtra}</p>
         </div>
+
+        <section className={styles.customSet}>
+          <div className={styles.customSetIntro}>
+            <span>{customSetContent.homeBadge}</span>
+            <h2>{customSetContent.homeTitle}</h2>
+            <p>{customSetContent.homeText}</p>
+          </div>
+
+          <div className={styles.customSetGrid}>
+            {customSetContent.cards.map((card, index) => (
+              <article
+                key={card.title}
+                className={styles.customSetCard}
+                style={{ animationDelay: `${index * 120}ms` }}
+              >
+                <img src={card.image} alt={card.title} />
+                <div className={styles.customSetCopy}>
+                  <h3>{card.title}</h3>
+                  <p>{card.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className={styles.customSetAction}>
+            <h3>{customSetContent.homeTitle}</h3>
+            <Link to="/custom-set">{customSetContent.homeCta}</Link>
+          </div>
+        </section>
 
         <div className={styles.gallery}>
           <h2>{t("home.galleryTitle")}</h2>
@@ -213,10 +291,7 @@ export function Home() {
         <div className={styles.review}>
           <h2>{t("home.reviewsTitle")}</h2>
           <div className={styles.reviewContainer}>
-            <button
-              className={styles.scrollButton}
-              onClick={() => scroll("left")}
-            >
+            <button className={styles.scrollButton} onClick={() => scroll("left")}>
               &#8249;
             </button>
             <div className={styles.reviewList} ref={reviewListRef}>
@@ -231,25 +306,41 @@ export function Home() {
                 </button>
               ))}
             </div>
-            <button
-              className={styles.scrollButton}
-              onClick={() => scroll("right")}
-            >
+            <button className={styles.scrollButton} onClick={() => scroll("right")}>
               &#8250;
             </button>
           </div>
         </div>
+
+        <section className={styles.positioning}>
+          <div className={styles.positioningPanel}>
+            <p>{t("home.aboutText")}</p>
+          </div>
+        </section>
+
+        <section className={styles.expertise}>
+          <div className={styles.expertiseIntro}>
+            <span>{t("home.expertiseBadge")}</span>
+            <h2>{t("home.expertiseTitle")}</h2>
+            <p>{t("home.expertiseText")}</p>
+          </div>
+          <div className={styles.expertiseGrid}>
+            {["booking", "reuse", "comfort"].map((key) => (
+              <article key={key} className={styles.expertiseCard}>
+                <h3>{t(`home.expertiseCards.${key}.title`)}</h3>
+                <p>{t(`home.expertiseCards.${key}.text`)}</p>
+              </article>
+            ))}
+          </div>
+          <div className={styles.expertiseAction}>
+            <Link to="/faq">{t("home.expertiseButton")}</Link>
+          </div>
+        </section>
       </div>
 
       {showDreadsModal ? (
-        <div
-          className={styles.dreadsModalOverlay}
-          onClick={() => setShowDreadsModal(false)}
-        >
-          <div
-            className={styles.dreadsModal}
-            onClick={(event) => event.stopPropagation()}
-          >
+        <div className={styles.dreadsModalOverlay} onClick={() => setShowDreadsModal(false)}>
+          <div className={styles.dreadsModal} onClick={(event) => event.stopPropagation()}>
             <button
               type="button"
               className={styles.dreadsClose}
@@ -271,10 +362,7 @@ export function Home() {
                 className={styles.dreadsChoice}
                 onClick={() => handleDreadChoice("textured-dreads")}
               >
-                <img
-                  src="/dreads_card/prototyp1.jpg"
-                  alt={t("shop.categories.textured-dreads")}
-                />
+                <img src="/dreads_card/prototyp1.jpg" alt={t("shop.categories.textured-dreads")} />
                 <span>{t("shop.categories.textured-dreads")}</span>
               </button>
             </div>
@@ -284,15 +372,12 @@ export function Home() {
 
       {lightboxImages.length ? (
         <div className={styles.lightboxOverlay} onClick={closeLightbox}>
-          <div
-            className={styles.lightboxStage}
-            onClick={(event) => event.stopPropagation()}
-          >
+          <div className={styles.lightboxStage} onClick={(event) => event.stopPropagation()}>
             <button
               type="button"
               className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
               onClick={showPrevLightboxImage}
-              aria-label="Previous image"
+              aria-label={lightboxText.previous}
             >
               ‹
             </button>
@@ -305,7 +390,7 @@ export function Home() {
               type="button"
               className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
               onClick={showNextLightboxImage}
-              aria-label="Next image"
+              aria-label={lightboxText.next}
             >
               ›
             </button>
@@ -313,7 +398,7 @@ export function Home() {
               type="button"
               className={styles.lightboxClose}
               onClick={closeLightbox}
-              aria-label="Close preview"
+              aria-label={lightboxText.close}
             >
               ×
             </button>

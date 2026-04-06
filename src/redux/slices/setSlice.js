@@ -11,13 +11,13 @@ export const fetchSets = createAsyncThunk(
   "sets/fetchSets",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/products/", {
+      const response = await axios.get("/products/", {
         withCredentials: false,
       });
       return response.data;
     } catch (error) {
       try {
-        const fallbackResponse = await fetch("http://127.0.0.1:8000/products/");
+        const fallbackResponse = await fetch("/products/");
         if (!fallbackResponse.ok) {
           throw new Error(`Request failed with status ${fallbackResponse.status}`);
         }

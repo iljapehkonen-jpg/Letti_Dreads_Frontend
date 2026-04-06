@@ -125,8 +125,8 @@ const syncQuantityViaLegacy = async ({ currentItem, targetQuantity, userId }) =>
 
   const fallbackUrl =
     delta > 0
-      ? `http://127.0.0.1:8000/cart/add/${currentItem.productId}/${userId}/`
-      : `http://127.0.0.1:8000/cart/remove/${currentItem.productId}/${userId}/`;
+      ? `/cart/add/${currentItem.productId}/${userId}/`
+      : `/cart/remove/${currentItem.productId}/${userId}/`;
 
   for (let step = 0; step < Math.abs(delta); step += 1) {
     await axios.get(fallbackUrl);
@@ -156,14 +156,14 @@ export const fetchCart = createAsyncThunk(
     }
 
     try {
-      const response = await axios.get("http://127.0.0.1:8000/cart/me/");
+      const response = await axios.get("/cart/me/");
       return (response.data?.cart ?? []).map((item) =>
         mapBackendCartItem(item, pinnedIds),
       );
     } catch (error) {
       if (isNotFoundError(error) && userId) {
         try {
-          const fallbackResponse = await axios.get(`http://127.0.0.1:8000/cart/${userId}/`);
+          const fallbackResponse = await axios.get(`/cart/${userId}/`);
           return (fallbackResponse.data?.cart ?? []).map((item) =>
             mapBackendCartItem(item, pinnedIds),
           );
@@ -186,7 +186,7 @@ export const addItemToCart = createAsyncThunk(
     const userId = getUserId(state);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/cart/me/items/", {
+      const response = await axios.post("/cart/me/items/", {
         product_id: payload.productId,
         length: payload.length,
         color: payload.color,
@@ -199,7 +199,7 @@ export const addItemToCart = createAsyncThunk(
       if (isNotFoundError(error) && userId) {
         try {
           await axios.get(
-            `http://127.0.0.1:8000/cart/add/${payload.productId}/${userId}/`,
+            `/cart/add/${payload.productId}/${userId}/`,
           );
 
           return normalizeCartItem({
@@ -243,7 +243,7 @@ export const updateCartItemQuantity = createAsyncThunk(
     }
 
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/cart/me/items/${id}/`, {
+      const response = await axios.patch(`/cart/me/items/${id}/`, {
         count: targetQuantity,
       });
       return mapBackendCartItem(response.data?.cart_item);
@@ -260,7 +260,7 @@ export const removeItemFromCart = createAsyncThunk(
     const userId = getUserId(state);
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/cart/me/items/${id}/delete/`);
+      await axios.delete(`/cart/me/items/${id}/delete/`);
       return id;
     } catch (error) {
       if (isNotFoundError(error) && userId) {
@@ -272,7 +272,7 @@ export const removeItemFromCart = createAsyncThunk(
         try {
           for (let step = 0; step < Number(currentItem.setQuantity); step += 1) {
             await axios.get(
-              `http://127.0.0.1:8000/cart/remove/${currentItem.productId}/${userId}/`,
+              `/cart/remove/${currentItem.productId}/${userId}/`,
             );
           }
 
@@ -312,7 +312,7 @@ export const updateCartItemDetails = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/cart/me/items/${id}/`, {
+      const response = await axios.patch(`/cart/me/items/${id}/`, {
         length,
         color,
         strand_quantity: strandQuantity,
@@ -324,9 +324,9 @@ export const updateCartItemDetails = createAsyncThunk(
       };
     } catch (error) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/cart/me/items/${id}/delete/`);
+        await axios.delete(`/cart/me/items/${id}/delete/`);
 
-        const response = await axios.post("http://127.0.0.1:8000/cart/me/items/", {
+        const response = await axios.post("/cart/me/items/", {
           product_id: productId,
           length,
           color,

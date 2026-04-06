@@ -113,6 +113,81 @@
       }
     }
 
+    .socialBlock {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 14px;
+      margin-top: 26px;
+      align-items: center;
+    }
+
+    .socialLink {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(50, 72, 243, 0.08);
+      color: #3248f3;
+      text-decoration: none;
+      font-weight: 700;
+
+      &:hover {
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+    }
+
+    .socialLinkInstagram {
+      background: rgba(225, 48, 108, 0.1);
+      color: #c13584;
+    }
+
+    .socialLinkFacebook {
+      background: rgba(24, 119, 242, 0.1);
+      color: #1877f2;
+    }
+
+    .socialLinkPinterest {
+      background: rgba(230, 0, 35, 0.1);
+      color: #e60023;
+    }
+
+    .socialIcon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #3248f3;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 800;
+      text-transform: uppercase;
+
+      svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+    }
+
+    .socialIconInstagram {
+      background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%);
+      color: #ffffff;
+    }
+
+    .socialIconFacebook {
+      background: #1877f2;
+      color: #ffffff;
+    }
+
+    .socialIconPinterest {
+      background: #e60023;
+      color: #ffffff;
+    }
+
     .hours {
       ul {
         list-style: none;
@@ -144,7 +219,14 @@
   }
 }
 
-:global(:root[data-theme="dark"]) {
+:global(:root[data-theme="dark"]),
+:global(:root[data-theme="burgundy"]),
+:global(:root[data-theme="olive"]),
+:global(:root[data-theme="forest"]),
+:global(:root[data-theme="sapphire"]),
+:global(:root[data-theme="plum"]),
+:global(:root[data-theme="terracotta"]),
+:global(:root[data-theme="graphite"]) {
   .contacts h1,
   .contacts .infoSection .hours ul li strong {
     color: #f3f5f7;
@@ -154,6 +236,22 @@
   .contacts .infoSection .hours ul li,
   .contacts .infoSection .bookingNote {
     color: #c7ced8;
+  }
+
+  .contacts .infoSection .socialLink {
+    color: #f3f5f7;
+  }
+
+  .contacts .infoSection .socialLinkInstagram {
+    background: rgba(221, 42, 123, 0.16);
+  }
+
+  .contacts .infoSection .socialLinkFacebook {
+    background: rgba(24, 119, 242, 0.16);
+  }
+
+  .contacts .infoSection .socialLinkPinterest {
+    background: rgba(230, 0, 35, 0.16);
   }
 
   .contacts .mapContainer,
@@ -166,7 +264,7 @@
 
 @media screen and (max-width: 768px) {
   .contacts {
-    padding: 80px 15px 20px 15px;
+    padding: 104px 15px 20px 15px;
 
     h1 {
       font-size: 32px;
@@ -186,6 +284,17 @@
 
       p {
         font-size: 14px;
+      }
+
+      .socialBlock {
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .contactInfo .infoItem {
+        grid-template-columns: 1fr;
+        gap: 6px;
       }
     }
   }
@@ -214,7 +323,7 @@
       }
 
       .contactInfo .infoItem {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 5px;
       }
     }

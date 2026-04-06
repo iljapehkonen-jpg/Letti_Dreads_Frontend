@@ -152,7 +152,7 @@ export const fetchLogin = createAsyncThunk(
   "auth/fetchLogin",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/users/login/", params);
+      const response = await axios.post("/users/login/", params);
       return normalizeAuthPayload(response.data);
     } catch (error) {
       const serverError = error.response?.data;
@@ -170,7 +170,7 @@ export const fetchRegister = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/users/register/",
+        "/users/register/",
         params,
       );
       return normalizeAuthPayload(response.data);
@@ -189,7 +189,7 @@ export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/users/me/");
+      const response = await axios.get("/users/me/");
       return {
         user: normalizeUser(response.data),
         token: response.data?.token ?? loadStoredAuth().token,
@@ -202,7 +202,7 @@ export const fetchCurrentUser = createAsyncThunk(
 
 export const fetchLogout = createAsyncThunk("auth/fetchLogout", async () => {
   try {
-    await axios.post("http://127.0.0.1:8000/users/logout/");
+    await axios.post("/users/logout/");
   } catch {
     // local logout should still succeed even if backend session is absent
   }

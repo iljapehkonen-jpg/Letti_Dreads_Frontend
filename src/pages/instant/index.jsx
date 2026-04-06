@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SetItem } from "../../componets";
@@ -12,13 +12,37 @@ import { normalizeCategorySlug } from "../../utils/categories.js";
 const INSTANT_LABELS = {
   fi: "Valmiit setit",
   en: "Instock",
-  ru: "\u0413\u043e\u0442\u043e\u0432\u044b\u0435 \u0441\u0435\u0442\u044b",
+  ru: "Готовые сеты",
+  de: "Fertige Sets",
+  fr: "Sets prêts",
+  it: "Set pronti",
+  el: "Έτοιμα σετ",
+  es: "Sets listos",
+  et: "Valmis komplektid",
+  lv: "Gatavie komplekti",
+  lt: "Paruošti rinkiniai",
+  pl: "Gotowe zestawy",
+};
+const INSTANT_MODAL_TEXT = {
+  fi: { buyNow: "Osta nyt", addToCart: "Lisää ostoskoriin", errorAddToCart: "Tuotetta ei voitu lisätä ostoskoriin" },
+  en: { buyNow: "Buy now", addToCart: "Add to cart", errorAddToCart: "Could not add item to cart" },
+  ru: { buyNow: "Купить сейчас", addToCart: "Добавить в корзину", errorAddToCart: "Не удалось добавить товар в корзину" },
+  de: { buyNow: "Jetzt kaufen", addToCart: "In den Warenkorb", errorAddToCart: "Produkt konnte nicht in den Warenkorb gelegt werden" },
+  fr: { buyNow: "Acheter maintenant", addToCart: "Ajouter au panier", errorAddToCart: "Impossible d'ajouter le produit au panier" },
+  it: { buyNow: "Acquista ora", addToCart: "Aggiungi al carrello", errorAddToCart: "Impossibile aggiungere il prodotto al carrello" },
+  el: { buyNow: "Αγορά τώρα", addToCart: "Προσθήκη στο καλάθι", errorAddToCart: "Δεν ήταν δυνατή η προσθήκη στο καλάθι" },
+  es: { buyNow: "Comprar ahora", addToCart: "Añadir al carrito", errorAddToCart: "No se pudo añadir el producto al carrito" },
+  et: { buyNow: "Osta kohe", addToCart: "Lisa ostukorvi", errorAddToCart: "Toodet ei saanud ostukorvi lisada" },
+  lv: { buyNow: "Pirkt tagad", addToCart: "Pievienot grozam", errorAddToCart: "Produktu neizdevās pievienot grozam" },
+  lt: { buyNow: "Pirkti dabar", addToCart: "Į krepšelį", errorAddToCart: "Nepavyko pridėti produkto į krepšelį" },
+  pl: { buyNow: "Kup teraz", addToCart: "Dodaj do koszyka", errorAddToCart: "Nie udało się dodać produktu do koszyka" },
 };
 
 export function Instant() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { language, t } = useLanguage();
+  const modalText = INSTANT_MODAL_TEXT[language] || INSTANT_MODAL_TEXT.en;
   const { sets } = useSelector((state) => state.sets);
   const user = useSelector((state) => state.auth.user);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,7 +52,7 @@ export function Instant() {
     dispatch(fetchSets());
   }, [dispatch]);
 
-  const instantTitle = INSTANT_LABELS[language] || INSTANT_LABELS.en;
+  const instantTitle = t("header.instock");
   const instantSets = useMemo(
     () =>
       sets.filter(
@@ -77,7 +101,7 @@ export function Instant() {
     );
 
     if (result.error) {
-      alert(result.payload?.error || "Could not add item to cart");
+      alert(result.payload?.error || modalText.errorAddToCart);
     }
 
     if (!result.error) {
@@ -147,13 +171,13 @@ export function Instant() {
 
                 <div className={styles.instantActions}>
                   <button className={shopStyles.payNowButton} onClick={handleBuyNow}>
-                    {t("shop.modal.buyNow")}
+                    {modalText.buyNow}
                   </button>
                   <button
                     className={shopStyles.addToCartButton}
                     onClick={handleAddToCart}
                   >
-                    {t("shop.modal.addToCart")}
+                    {modalText.addToCart}
                   </button>
                 </div>
               </div>
@@ -192,3 +216,4 @@ export function Instant() {
     </>
   );
 }
+

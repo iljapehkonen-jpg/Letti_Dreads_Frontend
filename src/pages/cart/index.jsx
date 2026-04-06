@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styles from "./Cart.module.scss";
@@ -35,7 +35,7 @@ const ORDER_ARTICLE_LABELS = {
   fi: {
     cardTitle: "Tilauksen tunnus",
     article: "Tilausnumero",
-    empty: "Tilauksia ei ole viela tehty.",
+    empty: "Tilauksia ei ole vielä tehty.",
   },
   en: {
     cardTitle: "Order article",
@@ -46,6 +46,225 @@ const ORDER_ARTICLE_LABELS = {
     cardTitle: "Артикул заказа",
     article: "Номер заказа",
     empty: "Пока нет оформленных заказов.",
+  },
+};
+
+const CART_MODAL_TEXT = {
+  fi: {
+    cost: "Hinta",
+    orderTitle: "Tilauksen vaihe",
+    orderDate: "Tilattu",
+    orderStatus: "Vaihe",
+    orderEmpty: "Tilauksia ei ole vielä tehty.",
+    processing: "Tilauksesi käsitellään",
+    assembling: "Tilauksesi kootaan",
+    in_transit: "Tilauksesi on matkalla",
+    ready_for_pickup: "Tilauksesi odottaa noutoa",
+    length: "Pituus",
+    quantity: "Määrä",
+    confirm: "OK",
+    errorUpdate: "Tuotetta ei voitu päivittää",
+    emptyCart: "Korissa ei ole tuotteita.",
+    scrollBackward: "Vieritä galleriaa taaksepäin",
+    scrollForward: "Vieritä galleriaa eteenpäin",
+  },
+  en: {
+    cost: "Cost",
+    orderTitle: "Order status",
+    orderDate: "Ordered",
+    orderStatus: "Status",
+    orderEmpty: "There are no completed orders yet.",
+    processing: "Your order is being processed",
+    assembling: "Your order is being assembled",
+    in_transit: "Your order is on the way",
+    ready_for_pickup: "Your order is ready for pickup",
+    length: "Length",
+    quantity: "Quantity",
+    confirm: "OK",
+    errorUpdate: "Could not update item",
+    emptyCart: "There are no items in the cart.",
+    scrollBackward: "Scroll gallery backward",
+    scrollForward: "Scroll gallery forward",
+  },
+  ru: {
+    cost: "Стоимость",
+    orderTitle: "Стадия заказа",
+    orderDate: "Дата заказа",
+    orderStatus: "Стадия",
+    orderEmpty: "Пока нет оформленных заказов.",
+    processing: "Ваш заказ оформляется",
+    assembling: "Ваш заказ собирается",
+    in_transit: "Ваш заказ в пути",
+    ready_for_pickup: "Ваш заказ ждёт вас на почте",
+    length: "Длина",
+    quantity: "Количество",
+    confirm: "ОК",
+    errorUpdate: "Не удалось обновить товар",
+    emptyCart: "В корзине нет товаров.",
+    scrollBackward: "Прокрутить галерею назад",
+    scrollForward: "Прокрутить галерею вперёд",
+  },
+  de: {
+    cost: "Kosten",
+    orderTitle: "Bestellstatus",
+    orderDate: "Bestellt",
+    orderStatus: "Status",
+    orderEmpty: "Es gibt noch keine abgeschlossenen Bestellungen.",
+    processing: "Ihre Bestellung wird bearbeitet",
+    assembling: "Ihre Bestellung wird zusammengestellt",
+    in_transit: "Ihre Bestellung ist unterwegs",
+    ready_for_pickup: "Ihre Bestellung ist zur Abholung bereit",
+    length: "Lange",
+    quantity: "Menge",
+    confirm: "OK",
+    errorUpdate: "Produkt konnte nicht aktualisiert werden",
+    emptyCart: "Im Warenkorb sind keine Produkte.",
+    scrollBackward: "Galerie zuruckscrollen",
+    scrollForward: "Galerie vorwarts scrollen",
+  },
+  fr: {
+    cost: "Cout",
+    orderTitle: "Statut de commande",
+    orderDate: "Commande passee",
+    orderStatus: "Statut",
+    orderEmpty: "Il n'y a pas encore de commandes finalisees.",
+    processing: "Votre commande est en cours de traitement",
+    assembling: "Votre commande est en cours de preparation",
+    in_transit: "Votre commande est en route",
+    ready_for_pickup: "Votre commande vous attend au point de retrait",
+    length: "Longueur",
+    quantity: "Quantite",
+    confirm: "OK",
+    errorUpdate: "Impossible de mettre a jour le produit",
+    emptyCart: "Il n'y a pas d'articles dans le panier.",
+    scrollBackward: "Faire defiler la galerie vers l'arriere",
+    scrollForward: "Faire defiler la galerie vers l'avant",
+  },
+  it: {
+    cost: "Costo",
+    orderTitle: "Stato dell'ordine",
+    orderDate: "Ordinato",
+    orderStatus: "Stato",
+    orderEmpty: "Non ci sono ancora ordini completati.",
+    processing: "Il tuo ordine e in elaborazione",
+    assembling: "Il tuo ordine e in preparazione",
+    in_transit: "Il tuo ordine e in viaggio",
+    ready_for_pickup: "Il tuo ordine e pronto per il ritiro",
+    length: "Lunghezza",
+    quantity: "Quantita",
+    confirm: "OK",
+    errorUpdate: "Impossibile aggiornare il prodotto",
+    emptyCart: "Non ci sono articoli nel carrello.",
+    scrollBackward: "Scorri la galleria indietro",
+    scrollForward: "Scorri la galleria avanti",
+  },
+  el: {
+    cost: "Κόστος",
+    orderTitle: "Κατάσταση παραγγελίας",
+    orderDate: "Ημερομηνία παραγγελίας",
+    orderStatus: "Κατάσταση",
+    orderEmpty: "Δεν υπάρχουν ακόμα ολοκληρωμένες παραγγελίες.",
+    processing: "Η παραγγελία σας επεξεργάζεται",
+    assembling: "Η παραγγελία σας ετοιμάζεται",
+    in_transit: "Η παραγγελία σας είναι καθ' οδόν",
+    ready_for_pickup: "Η παραγγελία σας σας περιμένει για παραλαβή",
+    length: "Μήκος",
+    quantity: "Ποσότητα",
+    confirm: "OK",
+    errorUpdate: "Δεν ήταν δυνατή η ενημέρωση του προϊόντος",
+    emptyCart: "Δεν υπάρχουν προϊόντα στο καλάθι.",
+    scrollBackward: "Κύλιση γκαλερί προς τα πίσω",
+    scrollForward: "Κύλιση γκαλερί προς τα εμπρός",
+  },
+  es: {
+    cost: "Costo",
+    orderTitle: "Estado del pedido",
+    orderDate: "Fecha del pedido",
+    orderStatus: "Estado",
+    orderEmpty: "Todavia no hay pedidos completados.",
+    processing: "Tu pedido se esta procesando",
+    assembling: "Tu pedido se esta preparando",
+    in_transit: "Tu pedido esta en camino",
+    ready_for_pickup: "Tu pedido te espera en el punto de recogida",
+    length: "Largo",
+    quantity: "Cantidad",
+    confirm: "OK",
+    errorUpdate: "No se pudo actualizar el producto",
+    emptyCart: "No hay productos en el carrito.",
+    scrollBackward: "Desplazar galeria hacia atras",
+    scrollForward: "Desplazar galeria hacia adelante",
+  },
+  et: {
+    cost: "Hind",
+    orderTitle: "Tellimuse staatus",
+    orderDate: "Tellitud",
+    orderStatus: "Staatus",
+    orderEmpty: "Veel ei ole vormistatud tellimusi.",
+    processing: "Teie tellimust toodeldakse",
+    assembling: "Teie tellimust komplekteeritakse",
+    in_transit: "Teie tellimus on teel",
+    ready_for_pickup: "Teie tellimus ootab teid postis",
+    length: "Pikkus",
+    quantity: "Kogus",
+    confirm: "OK",
+    errorUpdate: "Toodet ei saanud uuendada",
+    emptyCart: "Ostukorvis ei ole tooteid.",
+    scrollBackward: "Keri galeriid tagasi",
+    scrollForward: "Keri galeriid edasi",
+  },
+  lv: {
+    cost: "Cena",
+    orderTitle: "Pasutijuma statuss",
+    orderDate: "Pasutits",
+    orderStatus: "Statuss",
+    orderEmpty: "Vel nav noformetu pasutijumu.",
+    processing: "Jusu pasutijums tiek apstradats",
+    assembling: "Jusu pasutijums tiek komplektets",
+    in_transit: "Jusu pasutijums ir cela",
+    ready_for_pickup: "Jusu pasutijums gaida jus pasta",
+    length: "Garums",
+    quantity: "Daudzums",
+    confirm: "OK",
+    errorUpdate: "Neizdevas atjaunot produktu",
+    emptyCart: "Groza nav produktu.",
+    scrollBackward: "Ritinat galeriju atpakal",
+    scrollForward: "Ritinat galeriju uz priekÅ¡u",
+  },
+  lt: {
+    cost: "Kaina",
+    orderTitle: "Uzsakymo busena",
+    orderDate: "Uzsakyta",
+    orderStatus: "Busena",
+    orderEmpty: "Dar nera uzbaigtu uzsakymu.",
+    processing: "Jusu uzsakymas apdorojamas",
+    assembling: "Jusu uzsakymas komplektuojamas",
+    in_transit: "Jusu uzsakymas pakeliui",
+    ready_for_pickup: "Jusu uzsakymas laukia jusu paste",
+    length: "Ilgis",
+    quantity: "Kiekis",
+    confirm: "OK",
+    errorUpdate: "Nepavyko atnaujinti produkto",
+    emptyCart: "Krepselyje nera produktu.",
+    scrollBackward: "Slinkti galerija atgal",
+    scrollForward: "Slinkti galerija pirmyn",
+  },
+  pl: {
+    cost: "Koszt",
+    orderTitle: "Status zamowienia",
+    orderDate: "Data zamowienia",
+    orderStatus: "Status",
+    orderEmpty: "Nie ma jeszcze zrealizowanych zamowien.",
+    processing: "Twoje zamowienie jest przetwarzane",
+    assembling: "Twoje zamowienie jest kompletowane",
+    in_transit: "Twoje zamowienie jest w drodze",
+    ready_for_pickup: "Twoje zamowienie czeka na ciebie na poczcie",
+    length: "Dlugosc",
+    quantity: "Ilosc",
+    confirm: "OK",
+    errorUpdate: "Nie udalo sie zaktualizowac produktu",
+    emptyCart: "W koszyku nie ma produktow.",
+    scrollBackward: "Przewin galerie do tylu",
+    scrollForward: "Przewin galerie do przodu",
   },
 };
 
@@ -87,6 +306,7 @@ export const Cart = () => {
   const { cart } = useSelector((state) => state.cart);
   const user = useSelector((state) => state.auth.user);
   const latestOrder = useSelector((state) => state.orders.latestOrder);
+  const modalText = CART_MODAL_TEXT[language] || CART_MODAL_TEXT.en;
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedLength, setSelectedLength] = useState(LENGTH_OPTIONS[0].value);
   const [selectedQuantity, setSelectedQuantity] = useState(MIN_STRAND_QUANTITY);
@@ -122,9 +342,9 @@ export const Cart = () => {
     0,
   );
 
-  const costLabel = COST_LABELS[language] || COST_LABELS.en;
+  const costLabel = modalText.cost;
   const latestOrderDate = latestOrder
-    ? new Intl.DateTimeFormat(language === "ru" ? "ru-RU" : language === "fi" ? "fi-FI" : "en-GB", {
+    ? new Intl.DateTimeFormat(({ fi: "fi-FI", en: "en-GB", ru: "ru-RU", de: "de-DE", fr: "fr-FR", it: "it-IT", el: "el-GR", es: "es-ES", et: "et-EE", lv: "lv-LV", lt: "lt-LT", pl: "pl-PL" }[language] || "en-GB"), {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -161,7 +381,7 @@ export const Cart = () => {
       status: "Стадия",
     },
   };
-  const orderLabels = statusLabels[language] || statusLabels.en;
+  const orderLabels = modalText;
 
   const handleQuantityChange = async (id, quantity) => {
     dispatch(
@@ -264,7 +484,7 @@ export const Cart = () => {
 
     if (result.error) {
       await dispatch(fetchCart());
-      alert(result.payload?.error || "Could not update item");
+      alert(result.payload?.error || modalText.errorUpdate);
       return;
     }
 
@@ -290,7 +510,7 @@ export const Cart = () => {
     }
 
     if (!sortedCart.length) {
-      alert(language === "ru" ? "В корзине нет товаров." : language === "fi" ? "Korissa ei ole tuotteita." : "There are no items in the cart.");
+      alert(modalText.emptyCart);
       return;
     }
 
@@ -355,7 +575,7 @@ export const Cart = () => {
                           {t("cart.length")}: {item.length}
                         </p>
                         <p className={styles.optionsLine}>
-                          {t("shop.modal.quantity")}: {item.strandQuantity}
+                          {modalText.quantity}: {item.strandQuantity}
                         </p>
                         <p className={styles.truncate3} title={item.description}>
                           {item.description}
@@ -464,13 +684,7 @@ export const Cart = () => {
                   </div>
                 </>
               ) : (
-                <p className={styles.orderEmpty}>
-                  {language === "ru"
-                    ? "Пока нет оформленных заказов."
-                    : language === "fi"
-                      ? "Tilauksia ei ole viela tehty."
-                      : "There are no completed orders yet."}
-                </p>
+                <p className={styles.orderEmpty}>{orderLabels.orderEmpty}</p>
               )}
             </div>
           </div>
@@ -497,7 +711,7 @@ export const Cart = () => {
                 </div>
 
                 <div className={shopStyles.optionBlock}>
-                  <h3>{t("shop.modal.length")}</h3>
+                  <h3>{modalText.length}</h3>
                   <div className={shopStyles.lengthOptions}>
                     {LENGTH_OPTIONS.map((length) => (
                       <button
@@ -515,7 +729,7 @@ export const Cart = () => {
                 </div>
 
                 <div className={shopStyles.optionBlock}>
-                  <h3>{t("shop.modal.quantity")}</h3>
+                  <h3>{modalText.quantity}</h3>
                   <div className={shopStyles.quantityControl}>
                     <button
                       type="button"
@@ -535,7 +749,7 @@ export const Cart = () => {
 
                 <div className={styles.modalActionRow}>
                   <button className={styles.confirmButton} onClick={handleConfirmDetails}>
-                    OK
+                    {modalText.confirm}
                   </button>
                 </div>
               </div>
@@ -553,7 +767,7 @@ export const Cart = () => {
                       type="button"
                       className={shopStyles.previewScrollButton}
                       onClick={() => scrollGallery(-1)}
-                      aria-label="Scroll gallery backward"
+                      aria-label={modalText.scrollBackward}
                     >
                       ‹
                     </button>
@@ -576,7 +790,7 @@ export const Cart = () => {
                       type="button"
                       className={shopStyles.previewScrollButton}
                       onClick={() => scrollGallery(1)}
-                      aria-label="Scroll gallery forward"
+                      aria-label={modalText.scrollForward}
                     >
                       ›
                     </button>
@@ -590,3 +804,5 @@ export const Cart = () => {
     </>
   );
 };
+
+

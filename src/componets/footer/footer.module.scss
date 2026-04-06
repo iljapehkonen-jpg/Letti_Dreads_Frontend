@@ -10,7 +10,14 @@
   box-sizing: border-box;
 }
 
-:global(:root[data-theme="dark"]) .footer {
+:global(:root[data-theme="dark"]) .footer,
+:global(:root[data-theme="burgundy"]) .footer,
+:global(:root[data-theme="olive"]) .footer,
+:global(:root[data-theme="forest"]) .footer,
+:global(:root[data-theme="sapphire"]) .footer,
+:global(:root[data-theme="plum"]) .footer,
+:global(:root[data-theme="terracotta"]) .footer,
+:global(:root[data-theme="graphite"]) .footer {
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
@@ -19,6 +26,14 @@
 .infoColumn {
   display: flex;
   flex-direction: column;
+}
+
+.footerToggle {
+  display: contents;
+}
+
+.footerCaret {
+  display: none;
 }
 
 .brandBlock h2,
@@ -40,9 +55,10 @@
 }
 
 .footerLogo {
-  width: 88px;
+  width: 112px;
   height: auto;
   margin-bottom: 18px;
+  filter: drop-shadow(0 0 14px var(--logo-glow));
 }
 
 .actionLinks {
@@ -50,6 +66,68 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 22px;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.socialLink:hover {
+  transform: translateY(-2px);
+  opacity: 0.96;
+}
+
+.socialIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.socialIcon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.socialLinkInstagram {
+  background: rgba(221, 42, 123, 0.12);
+}
+
+.socialLinkFacebook {
+  background: rgba(24, 119, 242, 0.12);
+}
+
+.socialLinkPinterest {
+  background: rgba(230, 0, 35, 0.12);
+}
+
+.socialIconInstagram {
+  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%);
+}
+
+.socialIconFacebook {
+  background: #1877f2;
+}
+
+.socialIconPinterest {
+  background: #e60023;
 }
 
 .actionLinks a {
@@ -139,6 +217,64 @@
     grid-template-columns: 1fr;
     gap: 28px;
     padding: 40px 20px 24px;
+  }
+
+  .linkColumn,
+  .infoColumn {
+    gap: 0;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .footerToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    text-align: left;
+    font: inherit;
+  }
+
+  .footerCaret {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .footerCaretOpen {
+    transform: rotate(-135deg);
+  }
+
+  .menuList,
+  .infoList {
+    display: none;
+    padding-bottom: 10px;
+  }
+
+  .footerSectionOpen {
+    display: block;
+  }
+
+  .brandBlock h2 {
+    font-size: 28px;
+  }
+
+  .brandBlock p,
+  .menuList a,
+  .infoList a,
+  .infoList p {
+    font-size: 15px;
+    line-height: 1.6;
   }
 
   .bottomBar {

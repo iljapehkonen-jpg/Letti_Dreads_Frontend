@@ -3,7 +3,7 @@ import axios from "axios";
 const AUTH_STORAGE_KEY = "letti-auth-user";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_HOST,
+  baseURL: import.meta.env.VITE_API_BASE_URL || "",
   withCredentials: true,
 });
 

@@ -1,22 +1,32 @@
 .header {
   background-color: var(--header-bg);
   position: fixed;
+  inset: 0 0 auto 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 100px;
   padding: 0 15px;
   width: 100%;
+  max-width: 100vw;
   box-sizing: border-box;
   z-index: 100;
 }
 
-:global(:root[data-theme="dark"]) .header {
+:global(:root[data-theme="dark"]) .header,
+:global(:root[data-theme="burgundy"]) .header,
+:global(:root[data-theme="olive"]) .header,
+:global(:root[data-theme="forest"]) .header,
+:global(:root[data-theme="sapphire"]) .header,
+:global(:root[data-theme="plum"]) .header,
+:global(:root[data-theme="terracotta"]) .header,
+:global(:root[data-theme="graphite"]) .header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .dropMenu {
   width: 100%;
+  max-width: 100vw;
   height: fit-content;
   padding: 15px 20px;
   box-sizing: border-box;
@@ -35,6 +45,7 @@
   gap: 20px;
   transform: translateY(calc(-100% - 100px));
   opacity: 0;
+  overflow-x: clip;
 
   .menuList {
     list-style: none;
@@ -73,6 +84,10 @@
   }
 }
 
+.menuBackdrop {
+  display: none;
+}
+
 .visible {
   transform: translateY(0);
   opacity: 1;
@@ -93,11 +108,13 @@
   font-weight: 400;
   font-style: normal;
   color: var(--header-text);
+  text-shadow: 0 0 18px var(--logo-glow);
 }
 
 .logo img {
   width: 112px;
   height: auto;
+  filter: drop-shadow(0 0 14px var(--logo-glow));
 }
 
 .mobLogo {
@@ -118,6 +135,39 @@
       transition: transform 0.1s ease-in-out;
     }
   }
+}
+
+.menuToggle {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.menuToggleBar {
+  width: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease,
+    width 0.25s ease;
+  transform-origin: center;
+}
+
+.menuToggleOpen .menuToggleBar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menuToggleOpen .menuToggleBar:nth-child(2) {
+  opacity: 0;
+}
+
+.menuToggleOpen .menuToggleBar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .menu {
@@ -335,6 +385,10 @@
   border-color: #f3f5f7 !important;
 }
 
+.drawerLanguageSection {
+  display: none;
+}
+
 .shopToggle {
   display: inline-flex;
   align-items: center;
@@ -499,8 +553,10 @@
   max-height: min(88vh, 880px);
   padding: 28px;
   border-radius: 24px;
-  background-color: #ffffff;
-  color: #15181d;
+  background-color: var(--settings-bg);
+  color: var(--settings-text);
+  border: 1px solid var(--settings-card-border);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
   overflow: auto;
 }
@@ -548,11 +604,6 @@
   opacity: 0.8;
 }
 
-:global(:root[data-theme="dark"]) .settingsModal {
-  background-color: #11151b;
-  color: #f3f5f7;
-}
-
 .settingsClose {
   position: absolute;
   top: 14px;
@@ -564,10 +615,6 @@
   background-color: transparent !important;
   color: inherit;
   font-size: 28px;
-}
-
-:global(:root[data-theme="dark"]) .settingsClose {
-  color: #f3f5f7;
 }
 
 .settingsHero {
@@ -618,8 +665,8 @@
 .settingsCard {
   padding: 18px;
   border-radius: 18px;
-  background-color: rgba(12, 13, 15, 0.05);
-  border: 1px solid rgba(12, 13, 15, 0.08);
+  background-color: var(--settings-card-bg);
+  border: 1px solid var(--settings-card-border);
 
   h3,
   p {
@@ -629,11 +676,6 @@
   h3 {
     margin-bottom: 14px;
   }
-}
-
-:global(:root[data-theme="dark"]) .settingsCard {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .choiceRow {
@@ -654,28 +696,15 @@
 
 .choiceButton,
 .secondaryAction {
-  border: 1px solid rgba(12, 13, 15, 0.12);
-  background-color: #ffffff;
-  color: #15181d;
-}
-
-:global(:root[data-theme="dark"]) .choiceButton,
-:global(:root[data-theme="dark"]) .secondaryAction {
-  border-color: rgba(255, 255, 255, 0.14);
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #f3f5f7;
+  border: 1px solid var(--settings-button-border);
+  background-color: var(--settings-button-bg);
+  color: var(--settings-button-text);
 }
 
 .choiceActive {
-  border: 1px solid #0c0d0f;
-  background-color: #0c0d0f;
-  color: #ffffff;
-}
-
-:global(:root[data-theme="dark"]) .choiceActive {
-  border-color: #ffffff;
-  background-color: #ffffff;
-  color: #11151b;
+  border: 1px solid var(--settings-active-border);
+  background-color: var(--settings-active-bg);
+  color: var(--settings-active-text);
 }
 
 .securityNote {
@@ -701,11 +730,25 @@
   outline-offset: 2px;
 }
 
-:global(:root[data-theme="dark"]) .colorSwatch {
+:global(:root[data-theme="dark"]) .colorSwatch,
+:global(:root[data-theme="burgundy"]) .colorSwatch,
+:global(:root[data-theme="olive"]) .colorSwatch,
+:global(:root[data-theme="forest"]) .colorSwatch,
+:global(:root[data-theme="sapphire"]) .colorSwatch,
+:global(:root[data-theme="plum"]) .colorSwatch,
+:global(:root[data-theme="terracotta"]) .colorSwatch,
+:global(:root[data-theme="graphite"]) .colorSwatch {
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-:global(:root[data-theme="dark"]) .colorSwatchActive {
+:global(:root[data-theme="dark"]) .colorSwatchActive,
+:global(:root[data-theme="burgundy"]) .colorSwatchActive,
+:global(:root[data-theme="olive"]) .colorSwatchActive,
+:global(:root[data-theme="forest"]) .colorSwatchActive,
+:global(:root[data-theme="sapphire"]) .colorSwatchActive,
+:global(:root[data-theme="plum"]) .colorSwatchActive,
+:global(:root[data-theme="terracotta"]) .colorSwatchActive,
+:global(:root[data-theme="graphite"]) .colorSwatchActive {
   outline-color: #ffffff;
 }
 
@@ -724,23 +767,31 @@
   font-weight: 600;
 }
 
-:global(:root[data-theme="dark"]) .settingsLogout {
+:global(:root[data-theme="dark"]) .settingsLogout,
+:global(:root[data-theme="burgundy"]) .settingsLogout,
+:global(:root[data-theme="olive"]) .settingsLogout,
+:global(:root[data-theme="forest"]) .settingsLogout,
+:global(:root[data-theme="sapphire"]) .settingsLogout,
+:global(:root[data-theme="plum"]) .settingsLogout,
+:global(:root[data-theme="terracotta"]) .settingsLogout,
+:global(:root[data-theme="graphite"]) .settingsLogout {
   color: #ff9b9b;
 }
 
-@media screen and (max-width: 730px) {
-  .menu {
-    display: none;
-  }
-
+@media screen and (max-width: 1024px) {
   .header {
-    flex-direction: row-reverse;
-    box-sizing: border-box;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    width: 100%;
   }
 
   .nav {
-    width: 24px;
+    width: 44px;
+    display: flex;
+    justify-content: center;
   }
 
   .logo {
@@ -749,19 +800,170 @@
 
   .mobLogo {
     display: flex;
+    justify-self: center;
+    min-width: 0;
+  }
+
+  .menu {
+    width: auto;
+    margin-right: 0;
+    gap: 12px;
+    display: flex;
+    justify-content: flex-end;
+    justify-self: end;
+    padding-right: 4px;
+  }
+
+  .langMenu {
+    display: none;
+  }
+
+  .menu > button {
+    width: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .accountMenu {
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mobText h1 {
+    font-size: 18px;
+    line-height: 1.05;
+  }
+
+  .mobLogo img {
+    width: 64px;
+  }
+
+  .menuBackdrop {
+    position: fixed;
+    inset: 0;
+    display: block;
+    border: none;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.42);
+    z-index: 98;
   }
 
   .dropMenu {
+    top: 0;
+    left: 0;
+    width: min(84vw, 340px);
+    height: 100dvh;
+    padding: 108px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+    border-top: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 18px 0 36px rgba(0, 0, 0, 0.28);
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    opacity: 1;
+    z-index: 99;
+
     .menuList {
       width: 100%;
-      justify-content: center;
-      gap: 14px 18px;
+      margin: 0;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 18px;
+    }
+
+    .menuList li {
+      width: 100%;
+    }
+
+    .menuList li::after {
+      display: none;
     }
   }
 
+  .drawerLanguageSection {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .drawerLanguageLabel {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .drawerLanguageGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .drawerLanguageGrid button {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #f3f5f7;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .visible {
+    transform: translateX(0);
+  }
+
+  .shopItem {
+    width: 100%;
+  }
+
+  .shopToggle,
+  .submenuToggle {
+    width: 100%;
+    justify-content: space-between;
+    padding: 2px 0;
+  }
+
   .shopSubmenu {
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    min-width: 0;
+    max-width: none;
+    margin-top: 12px;
+    padding: 0 0 0 12px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    gap: 14px;
+    white-space: normal;
+  }
+
+  .shopSubmenu button {
+    white-space: normal;
+    line-height: 1.3;
+  }
+
+  .dreadsSubmenu {
+    padding-left: 12px;
+    gap: 12px;
+  }
+
+  .accountDropdown {
+    right: 0;
+    top: calc(100% + 12px);
+    width: min(280px, calc(100vw - 24px));
   }
 
   .settingsGrid {
@@ -770,5 +972,61 @@
 
   .settingsHero {
     align-items: flex-start;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .header {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 6px;
+    height: 92px;
+    padding: 0 10px;
+  }
+
+  .nav {
+    width: 40px;
+  }
+
+  .menu {
+    gap: 10px;
+    padding-right: 2px;
+  }
+
+  .mobLogo img {
+    width: 56px;
+  }
+
+  .mobText h1 {
+    font-size: 16px;
+  }
+
+  .dropMenu {
+    width: min(80vw, 284px);
+    padding-top: 98px;
+  }
+
+  .dropMenu .menuList {
+    gap: 16px;
+  }
+
+  .drawerLanguageGrid {
+    gap: 6px;
+  }
+
+  .drawerLanguageGrid button {
+    min-height: 34px;
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .drawerLanguageLabel {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .dropMenu {
+    width: min(78vw, 296px);
+    padding: 98px 16px calc(22px + env(safe-area-inset-bottom, 0px));
   }
 }

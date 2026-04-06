@@ -26,6 +26,105 @@ const PER_PIECE_LABELS = {
   ru: "шт.",
 };
 
+const MODAL_TEXT = {
+  fi: {
+    length: "Pituus",
+    quantity: "Maara",
+    buyNow: "Osta nyt",
+    addToCart: "Lisaa ostoskoriin",
+    errorAddToCart: "Tuotetta ei voitu lisata ostoskoriin",
+    perPiece: "kpl.",
+  },
+  en: {
+    length: "Length",
+    quantity: "Quantity",
+    buyNow: "Buy now",
+    addToCart: "Add to cart",
+    errorAddToCart: "Could not add item to cart",
+    perPiece: "pc.",
+  },
+  ru: {
+    length: "Длина",
+    quantity: "Количество",
+    buyNow: "Купить сейчас",
+    addToCart: "Добавить в корзину",
+    errorAddToCart: "Не удалось добавить товар в корзину",
+    perPiece: "шт.",
+  },
+  de: {
+    length: "Lange",
+    quantity: "Menge",
+    buyNow: "Jetzt kaufen",
+    addToCart: "In den Warenkorb",
+    errorAddToCart: "Produkt konnte nicht in den Warenkorb gelegt werden",
+    perPiece: "Stk.",
+  },
+  fr: {
+    length: "Longueur",
+    quantity: "Quantite",
+    buyNow: "Acheter maintenant",
+    addToCart: "Ajouter au panier",
+    errorAddToCart: "Impossible d'ajouter le produit au panier",
+    perPiece: "pcs",
+  },
+  it: {
+    length: "Lunghezza",
+    quantity: "Quantita",
+    buyNow: "Acquista ora",
+    addToCart: "Aggiungi al carrello",
+    errorAddToCart: "Impossibile aggiungere il prodotto al carrello",
+    perPiece: "pz",
+  },
+  el: {
+    length: "Μηκος",
+    quantity: "Ποσοτητα",
+    buyNow: "Αγορα τωρα",
+    addToCart: "Προσθηκη στο καλαθι",
+    errorAddToCart: "Δεν ηταν δυνατη η προσθηκη στο καλαθι",
+    perPiece: "τεμ.",
+  },
+  es: {
+    length: "Largo",
+    quantity: "Cantidad",
+    buyNow: "Comprar ahora",
+    addToCart: "Anadir al carrito",
+    errorAddToCart: "No se pudo anadir el producto al carrito",
+    perPiece: "uds.",
+  },
+  et: {
+    length: "Pikkus",
+    quantity: "Kogus",
+    buyNow: "Osta kohe",
+    addToCart: "Lisa ostukorvi",
+    errorAddToCart: "Toodet ei saanud ostukorvi lisada",
+    perPiece: "tk",
+  },
+  lv: {
+    length: "Garums",
+    quantity: "Daudzums",
+    buyNow: "Pirkt tagad",
+    addToCart: "Pievienot grozam",
+    errorAddToCart: "Produktu neizdevas pievienot grozam",
+    perPiece: "gab.",
+  },
+  lt: {
+    length: "Ilgis",
+    quantity: "Kiekis",
+    buyNow: "Pirkti dabar",
+    addToCart: "I krepseli",
+    errorAddToCart: "Nepavyko prideti produkto i krepseli",
+    perPiece: "vnt.",
+  },
+  pl: {
+    length: "Dlugosc",
+    quantity: "Ilosc",
+    buyNow: "Kup teraz",
+    addToCart: "Dodaj do koszyka",
+    errorAddToCart: "Nie udalo sie dodac produktu do koszyka",
+    perPiece: "szt.",
+  },
+};
+
 export function Shop() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -33,6 +132,7 @@ export function Shop() {
   const { sets } = useSelector((state) => state.sets);
   const user = useSelector((state) => state.auth.user);
   const { t, language } = useLanguage();
+  const modalText = MODAL_TEXT[language] || MODAL_TEXT.en;
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedLength, setSelectedLength] = useState(LENGTH_OPTIONS[0].value);
   const [selectedQuantity, setSelectedQuantity] = useState(DEFAULT_QUANTITY);
@@ -124,7 +224,7 @@ export function Shop() {
     );
 
     if (result.error) {
-      alert(result.payload?.error || "Could not add item to cart");
+      alert(result.payload?.error || modalText.errorAddToCart);
     }
 
     if (!result.error) {
@@ -154,7 +254,7 @@ export function Shop() {
       : [];
   const selectedUnitPrice = Number(selectedProduct?.price || 0);
   const selectedTotalPrice = selectedUnitPrice * selectedQuantity;
-  const perPieceLabel = PER_PIECE_LABELS[language] || PER_PIECE_LABELS.en;
+  const perPieceLabel = modalText.perPiece;
 
   return (
     <>
@@ -211,7 +311,7 @@ export function Shop() {
                 </div>
 
                 <div className={styles.optionBlock}>
-                  <h3>{t("shop.modal.length")}</h3>
+                  <h3>{modalText.length}</h3>
                   <div className={styles.lengthOptions}>
                     {LENGTH_OPTIONS.map((length) => (
                       <button
@@ -229,7 +329,7 @@ export function Shop() {
                 </div>
 
                 <div className={styles.optionBlock}>
-                  <h3>{t("shop.modal.quantity")}</h3>
+                  <h3>{modalText.quantity}</h3>
                   <div className={styles.quantityControl}>
                     <button
                       type="button"
@@ -249,13 +349,13 @@ export function Shop() {
 
                 <div className={styles.actionButtons}>
                   <button className={styles.payNowButton} onClick={handleBuyNow}>
-                    {t("shop.modal.buyNow")}
+                    {modalText.buyNow}
                   </button>
                   <button
                     className={styles.addToCartButton}
                     onClick={handleAddToCart}
                   >
-                    {t("shop.modal.addToCart")}
+                    {modalText.addToCart}
                   </button>
                 </div>
               </div>
