@@ -115,22 +115,25 @@
 
     .socialBlock {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 14px;
       margin-top: 26px;
       align-items: center;
+      justify-content: flex-start;
     }
 
     .socialLink {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 999px;
-      background: rgba(50, 72, 243, 0.08);
-      color: #3248f3;
+      flex: 0 0 auto;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: inherit;
       text-decoration: none;
-      font-weight: 700;
 
       &:hover {
         text-decoration: none;
@@ -138,24 +141,12 @@
       }
     }
 
-    .socialLinkInstagram {
-      background: rgba(225, 48, 108, 0.1);
-      color: #c13584;
-    }
-
-    .socialLinkFacebook {
-      background: rgba(24, 119, 242, 0.1);
-      color: #1877f2;
-    }
-
-    .socialLinkPinterest {
-      background: rgba(230, 0, 35, 0.1);
-      color: #e60023;
-    }
-
     .socialIcon {
       width: 40px;
       height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -238,22 +229,6 @@
     color: #c7ced8;
   }
 
-  .contacts .infoSection .socialLink {
-    color: #f3f5f7;
-  }
-
-  .contacts .infoSection .socialLinkInstagram {
-    background: rgba(221, 42, 123, 0.16);
-  }
-
-  .contacts .infoSection .socialLinkFacebook {
-    background: rgba(24, 119, 242, 0.16);
-  }
-
-  .contacts .infoSection .socialLinkPinterest {
-    background: rgba(230, 0, 35, 0.16);
-  }
-
   .contacts .mapContainer,
   .contacts .infoSection .infoCard {
     background-color: rgba(255, 255, 255, 0.05);
@@ -287,7 +262,7 @@
       }
 
       .socialBlock {
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
         justify-content: flex-start;
       }
@@ -295,6 +270,18 @@
       .contactInfo .infoItem {
         grid-template-columns: 1fr;
         gap: 6px;
+      }
+
+      .socialLink {
+        width: 40px;
+        height: 40px;
+      }
+
+      .socialIcon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
       }
     }
   }

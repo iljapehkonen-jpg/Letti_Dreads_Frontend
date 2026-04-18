@@ -10,7 +10,7 @@
   width: 100%;
   max-width: 100vw;
   box-sizing: border-box;
-  z-index: 100;
+  z-index: 120;
 }
 
 :global(:root[data-theme="dark"]) .header,
@@ -36,7 +36,7 @@
   background-color: var(--header-bg);
   color: var(--header-text);
   border-top: 1px solid #b0b0b0;
-  z-index: 1;
+  z-index: 110;
   transition:
     transform 0.4s ease-in-out,
     opacity 0.2s ease-in-out;
@@ -46,6 +46,8 @@
   transform: translateY(calc(-100% - 100px));
   opacity: 0;
   overflow-x: clip;
+  pointer-events: none;
+  isolation: isolate;
 
   .menuList {
     list-style: none;
@@ -59,7 +61,7 @@
     justify-content: space-between;
     width: min(100%, 980px);
     row-gap: 12px;
-    column-gap: 18px;
+    column-gap: 24px;
 
     li {
       position: relative;
@@ -84,6 +86,47 @@
   }
 }
 
+.drawerNavLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  color: var(--header-text);
+  text-decoration: none;
+  line-height: 1.4;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+
+  &::after {
+    content: "";
+    width: 0;
+    height: 2px;
+    background-color: #ffffff;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    transition: width 0.15s ease-in-out;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    width: 100%;
+  }
+}
+
+.drawerNavLinkNoUnderline {
+  &::after,
+  &:hover::after,
+  &:focus-visible::after {
+    width: 0;
+  }
+}
+
 .menuBackdrop {
   display: none;
 }
@@ -91,6 +134,7 @@
 .visible {
   transform: translateY(0);
   opacity: 1;
+  pointer-events: auto;
 }
 
 .logo {
@@ -389,15 +433,24 @@
   display: none;
 }
 
-.shopToggle {
+.shopHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.shopToggleButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
   background: transparent;
   border: none;
   color: var(--header-text);
-  font: inherit;
-  padding: 0;
   cursor: pointer;
 
   &::after {
@@ -418,6 +471,7 @@
 
 .shopItem {
   position: relative;
+  width: 100%;
 
   &::after {
     display: none;
@@ -425,22 +479,26 @@
 }
 
 .shopSubmenu {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
-  min-width: 180px;
-  padding: 12px;
+  width: min(280px, 100%);
+  min-width: 0;
+  max-width: 280px;
+  margin-top: 10px;
+  margin-left: 0;
+  align-self: flex-start;
+  padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   background-color: var(--header-surface);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
-  z-index: 5;
-  white-space: nowrap;
+  z-index: 115;
+  white-space: normal;
+  pointer-events: auto;
+  box-sizing: border-box;
 
   &::after {
     display: none;
@@ -472,6 +530,25 @@
       width: 100%;
     }
   }
+
+  .drawerNavLink {
+    position: relative;
+
+    &::after {
+      content: "";
+      width: 0;
+      height: 2px;
+      background-color: #ffffff;
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      transition: width 0.15s ease-in-out;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+  }
 }
 
 .dreadsGroup {
@@ -480,19 +557,26 @@
   gap: 8px;
 }
 
+.dreadsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
 .submenuToggle {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
   background: transparent;
   border: none;
   color: var(--header-text);
   font: inherit;
-  text-align: left;
   padding: 0;
   cursor: pointer;
-  width: 100%;
+  width: 20px;
+  flex-shrink: 0;
 }
 
 .submenuCaret {
@@ -515,9 +599,34 @@
   flex-direction: column;
   gap: 8px;
   padding-left: 14px;
+  margin-top: -2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  position: relative;
+  z-index: 116;
 
   button {
     position: relative;
+
+    &::after {
+      content: "";
+      width: 0;
+      height: 2px;
+      background-color: #ffffff;
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      transition: width 0.15s ease-in-out;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+  }
+
+  .drawerNavLink {
+    position: relative;
+    font-size: 14px;
+    opacity: 0.92;
 
     &::after {
       content: "";
@@ -847,15 +956,15 @@
     border: none;
     padding: 0;
     background: rgba(0, 0, 0, 0.42);
-    z-index: 98;
+    z-index: 109;
   }
 
   .dropMenu {
     top: 0;
     left: 0;
-    width: min(84vw, 340px);
+    width: min(88vw, 372px);
     height: 100dvh;
-    padding: 108px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+    padding: 108px 22px calc(28px + env(safe-area-inset-bottom, 0px));
     border-top: none;
     border-right: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 18px 0 36px rgba(0, 0, 0, 0.28);
@@ -863,7 +972,7 @@
     overflow-y: auto;
     transform: translateX(-100%);
     opacity: 1;
-    z-index: 99;
+    z-index: 110;
 
     .menuList {
       width: 100%;
@@ -871,11 +980,17 @@
       flex-direction: column;
       align-items: stretch;
       justify-content: flex-start;
-      gap: 18px;
+      gap: 22px;
     }
 
     .menuList li {
       width: 100%;
+    }
+
+    .menuList li > .drawerNavLink {
+      padding: 4px 0;
+      font-size: 16px;
+      font-weight: 600;
     }
 
     .menuList li::after {
@@ -926,33 +1041,56 @@
     width: 100%;
   }
 
-  .shopToggle,
+  .shopHeaderRow {
+    width: 100%;
+  }
+
+  .shopToggleButton {
+    width: 20px;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
   .submenuToggle {
     width: 100%;
     justify-content: space-between;
-    padding: 2px 0;
+    padding: 4px 0;
+    font-size: 16px;
+    font-weight: 600;
   }
 
   .shopSubmenu {
     position: static;
     top: auto;
     left: auto;
-    transform: none;
+    width: min(250px, 100%);
     min-width: 0;
-    max-width: none;
-    margin-top: 12px;
-    padding: 0 0 0 12px;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
+    max-width: min(280px, 100%);
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    background-color: var(--header-surface);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
     gap: 14px;
     white-space: normal;
+    box-sizing: border-box;
+    z-index: 115;
+    pointer-events: auto;
   }
 
   .shopSubmenu button {
+    display: inline-flex;
+    width: 100%;
     white-space: normal;
-    line-height: 1.3;
+    line-height: 1.4;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .shopSubmenu .drawerNavLink {
+    display: inline-flex;
+    width: 100%;
   }
 
   .dreadsSubmenu {
@@ -1001,12 +1139,12 @@
   }
 
   .dropMenu {
-    width: min(80vw, 284px);
+    width: min(84vw, 320px);
     padding-top: 98px;
   }
 
   .dropMenu .menuList {
-    gap: 16px;
+    gap: 18px;
   }
 
   .drawerLanguageGrid {
@@ -1026,7 +1164,7 @@
 
 @media screen and (max-width: 560px) {
   .dropMenu {
-    width: min(78vw, 296px);
+    width: min(82vw, 320px);
     padding: 98px 16px calc(22px + env(safe-area-inset-bottom, 0px));
   }
 }

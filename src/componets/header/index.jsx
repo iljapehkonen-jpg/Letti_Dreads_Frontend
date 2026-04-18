@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
@@ -10,6 +10,7 @@ import {
 import { fetchLatestOrder } from "../../redux/slices/orderSlice";
 import styles from "./Header.module.scss";
 import { getCustomSetContent } from "../../pages/custom_set/content.js";
+import { HOME_SECTION_IDS, getHomeSectionContent } from "../../pages/home/sectionContent.js";
 
 const THEME_STORAGE_KEY = "letti-theme";
 const THEMES = [
@@ -122,19 +123,21 @@ const getAvatarTextColor = (hex) => {
 };
 
 export function Header() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isDreadsOpen, setIsDreadsOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isOrderStatusOpen, setIsOrderStatusOpen] = useState(false);
   const [theme, setTheme] = useState(getInitialTheme);
-  const menu = useRef();
-  const nav = useRef();
+  const drawerRef = useRef(null);
+  const drawerToggleRef = useRef(null);
   const languageMenu = useRef();
   const accountMenu = useRef();
   const dispatch = useDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage, languages, t } = useLanguage();
   const user = useSelector((state) => state.auth.user);
@@ -160,10 +163,9 @@ export function Header() {
       : language === "fi"
         ? "Valmiit setit"
         : "Instock";
-  const faqLabel = t("header.faq");
-  const curlsOnMiniDreadLabel = t("header.curlsOnMiniDread");
   const orderLabels = ORDER_STATUS_TEXT[language] || ORDER_STATUS_TEXT.en;
   const customSetContent = getCustomSetContent(language);
+  const homeSectionContent = getHomeSectionContent(language);
   const latestOrderDate = latestOrder
     ? new Intl.DateTimeFormat(
         DATE_LOCALES[language] || DATE_LOCALES.en,
@@ -177,7 +179,6 @@ export function Header() {
       ).format(new Date(latestOrder.created_at))
     : "";
   const resolvedInstantLabel = t("header.instock");
-  const resolvedFaqLabel = t("header.faq");
   const resolvedCurlsOnMiniDreadLabel = t("header.curlsOnMiniDread");
 
   const avatarFallback = useMemo(() => {
@@ -202,42 +203,79 @@ export function Header() {
     }
   }, [dispatch, user]);
 
-  const handleClick = (e) => {
-    if (nav.current && nav.current.contains(e.target)) {
-      return;
-    }
-
-    if (menu.current && !menu.current.contains(e.target)) {
-      setIsVisible(false);
-      setIsShopOpen(false);
-      setIsDreadsOpen(false);
-    }
-
-    const clickedInsideDrawerMenu = menu.current && menu.current.contains(e.target);
-    if (
-      languageMenu.current &&
-      !languageMenu.current.contains(e.target) &&
-      !clickedInsideDrawerMenu
-    ) {
-      setIsLanguageOpen(false);
-    }
-
-    if (accountMenu.current && !accountMenu.current.contains(e.target)) {
-      setIsAccountOpen(false);
-    }
-  };
+  useEffect(() => {
+    setIsDrawerOpen(false);
+    setIsShopOpen(false);
+    setIsServicesOpen(false);
+    setIsDreadsOpen(false);
+  }, [location.pathname, location.hash, location.search]);
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+    const handleDocumentPointerDown = (event) => {
+      const target = event.target;
 
-  const closeAndNavigate = (path) => {
-    setIsVisible(false);
+      if (
+        isDrawerOpen &&
+        drawerRef.current &&
+        !drawerRef.current.contains(target) &&
+        drawerToggleRef.current &&
+        !drawerToggleRef.current.contains(target)
+      ) {
+        closeDrawer();
+      }
+
+      if (
+        languageMenu.current &&
+        !languageMenu.current.contains(target)
+      ) {
+        setIsLanguageOpen(false);
+      }
+
+      if (accountMenu.current && !accountMenu.current.contains(target)) {
+        setIsAccountOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleDocumentPointerDown);
+    return () => document.removeEventListener("mousedown", handleDocumentPointerDown);
+  }, [isDrawerOpen]);
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
     setIsLanguageOpen(false);
     setIsShopOpen(false);
+    setIsServicesOpen(false);
     setIsDreadsOpen(false);
+  };
+
+  const handleDrawerNavigate = (path) => {
+    closeDrawer();
     navigate(path);
+  };
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen((prev) => {
+      const nextOpen = !prev;
+
+      if (!nextOpen) {
+        setIsShopOpen(false);
+        setIsServicesOpen(false);
+        setIsDreadsOpen(false);
+      }
+
+      return nextOpen;
+    });
+  };
+
+  const toggleShop = () => {
+    setIsShopOpen((prev) => !prev);
+    setIsServicesOpen(false);
+  };
+
+  const toggleServices = () => {
+    setIsServicesOpen((prev) => !prev);
+    setIsShopOpen(false);
+    setIsDreadsOpen(false);
   };
 
   const selectLanguage = (code) => {
@@ -259,8 +297,9 @@ export function Header() {
     setIsSettingsOpen(false);
     setIsOrderStatusOpen(false);
     setIsAccountOpen(false);
-    setIsVisible(false);
+    setIsDrawerOpen(false);
     setIsShopOpen(false);
+    setIsServicesOpen(false);
     setIsDreadsOpen(false);
     navigate("/");
   };
@@ -268,13 +307,14 @@ export function Header() {
   return (
     <>
       <div className={styles.header}>
-        <div className={styles.nav} ref={nav}>
+        <div className={styles.nav}>
           <button
             type="button"
-            className={`${styles.menuToggle} ${isVisible ? styles.menuToggleOpen : ""}`}
-            onClick={() => setIsVisible((prev) => !prev)}
+            ref={drawerToggleRef}
+            className={`${styles.menuToggle} ${isDrawerOpen ? styles.menuToggleOpen : ""}`}
+            onClick={toggleDrawer}
             aria-label={t("header.menu")}
-            aria-expanded={isVisible}
+            aria-expanded={isDrawerOpen}
           >
             <span className={styles.menuToggleBar} />
             <span className={styles.menuToggleBar} />
@@ -437,101 +477,202 @@ export function Header() {
         </div>
       </div>
 
-      {isVisible ? (
+      {isDrawerOpen ? (
         <button
           type="button"
           className={styles.menuBackdrop}
-          onClick={() => {
-            setIsVisible(false);
-            setIsLanguageOpen(false);
-            setIsShopOpen(false);
-            setIsDreadsOpen(false);
-          }}
+          onClick={closeDrawer}
           aria-label={t("header.menu")}
         />
       ) : null}
 
-      <div
-        className={`${styles.dropMenu} ${isVisible ? styles.visible : ""}`}
-        ref={menu}
+      <aside
+        ref={drawerRef}
+        className={`${styles.dropMenu} ${isDrawerOpen ? styles.visible : ""}`}
+        onClick={(event) => event.stopPropagation()}
       >
         <ul className={styles.menuList}>
-          <li onClick={() => closeAndNavigate("/")}>{t("header.home")}</li>
+          <li>
+            <button type="button" className={styles.drawerNavLink} onClick={() => handleDrawerNavigate("/")}>
+              {t("header.home")}
+            </button>
+          </li>
 
           <li className={styles.shopItem}>
-            <button
-              type="button"
-              className={`${styles.shopToggle} ${isShopOpen ? styles.shopToggleOpen : ""}`}
-              onClick={() => setIsShopOpen((prev) => !prev)}
-            >
-              {t("header.shop")}
-            </button>
+            <div className={styles.shopHeaderRow}>
+              <button
+                type="button"
+                className={styles.drawerNavLink}
+                onClick={toggleShop}
+              >
+                {t("header.shop")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.shopToggleButton} ${isShopOpen ? styles.shopToggleOpen : ""}`}
+                onClick={toggleShop}
+                aria-label={t("header.shop")}
+              />
+            </div>
             {isShopOpen ? (
               <div className={styles.shopSubmenu}>
                 <div className={styles.dreadsGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.submenuToggle} ${isDreadsOpen ? styles.submenuToggleOpen : ""}`}
-                    onClick={() => setIsDreadsOpen((prev) => !prev)}
-                  >
-                    <span>{t("header.dreads")}</span>
-                    <span className={styles.submenuCaret} aria-hidden="true" />
-                  </button>
-
+                  <div className={styles.dreadsRow}>
+                    <button
+                      type="button"
+                      className={`${styles.drawerNavLink} ${styles.drawerNavLinkNoUnderline}`}
+                      onClick={() => setIsDreadsOpen((prev) => !prev)}
+                    >
+                      {t("header.dreads")}
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.submenuToggle} ${isDreadsOpen ? styles.submenuToggleOpen : ""}`}
+                      onClick={() => setIsDreadsOpen((prev) => !prev)}
+                      aria-label={t("header.dreads")}
+                    >
+                      <span className={styles.submenuCaret} aria-hidden="true" />
+                    </button>
+                  </div>
                   {isDreadsOpen ? (
                     <div className={styles.dreadsSubmenu}>
-                      <button
-                        type="button"
-                        onClick={() => closeAndNavigate("/shop/smooth-dreads")}
+                      <Link
+                        to="/shop/smooth-dreads"
+                        className={styles.drawerNavLink}
+                        onClick={closeDrawer}
                       >
                         {t("header.smoothDreads")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => closeAndNavigate("/shop/textured-dreads")}
+                      </Link>
+                      <Link
+                        to="/shop/textured-dreads"
+                        className={styles.drawerNavLink}
+                        onClick={closeDrawer}
                       >
                         {t("header.texturedDreads")}
-                      </button>
+                      </Link>
                     </div>
                   ) : null}
                 </div>
-                <button type="button" onClick={() => closeAndNavigate("/shop/curls")}>
+                <Link
+                  to="/shop/curls-on-mini-dread"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
+                >
                   {t("header.curls")}
-                </button>
-                <button type="button" onClick={() => closeAndNavigate("/shop/braids")}>
+                </Link>
+                <Link
+                  to="/shop/braids"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
+                >
                   {t("header.braids")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => closeAndNavigate("/shop/hair-on-braid")}
+                </Link>
+                <Link
+                  to="/shop/hair-on-braid"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
                 >
                   {t("header.hairOnBraid")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => closeAndNavigate("/shop/curls-on-mini-dread")}
+                </Link>
+                <Link
+                  to="/shop/curls-on-mini-dread"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
                 >
                   {resolvedCurlsOnMiniDreadLabel}
-                </button>
-                <button type="button" onClick={() => closeAndNavigate("/custom-set")}>
+                </Link>
+                <Link
+                  to="/custom-set"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
+                >
                   {customSetContent.navLabel}
-                </button>
-                <button type="button" onClick={() => closeAndNavigate("/shop/other")}>
+                </Link>
+                <Link
+                  to="/shop/other"
+                  className={styles.drawerNavLink}
+                  onClick={closeDrawer}
+                >
                   {t("header.other")}
-                </button>
+                </Link>
               </div>
             ) : null}
           </li>
 
-          <li onClick={() => closeAndNavigate("/instock")}>{resolvedInstantLabel}</li>
-
-          <li onClick={() => closeAndNavigate("/contacts")}>
-            {t("header.contacts")}
+          <li>
+            <button
+              type="button"
+              className={styles.drawerNavLink}
+              onClick={() => handleDrawerNavigate("/instock")}
+            >
+              {resolvedInstantLabel}
+            </button>
           </li>
-          <li onClick={() => closeAndNavigate("/faq")}>{resolvedFaqLabel}</li>
-          <li onClick={() => closeAndNavigate("/cart")}>{t("header.cart")}</li>
+          <li className={styles.shopItem}>
+            <div className={styles.shopHeaderRow}>
+              <button
+                type="button"
+                className={styles.drawerNavLink}
+                onClick={toggleServices}
+              >
+                {homeSectionContent.servicesNavLabel}
+              </button>
+              <button
+                type="button"
+                className={`${styles.shopToggleButton} ${isServicesOpen ? styles.shopToggleOpen : ""}`}
+                onClick={toggleServices}
+                aria-label={homeSectionContent.servicesNavLabel}
+              />
+            </div>
+            {isServicesOpen ? (
+              <div className={styles.shopSubmenu}>
+                <button
+                  type="button"
+                  className={styles.drawerNavLink}
+                  onClick={() => handleDrawerNavigate(`/#${HOME_SECTION_IDS.about}`)}
+                >
+                  {homeSectionContent.aboutNavLabel}
+                </button>
+                <button
+                  type="button"
+                  className={styles.drawerNavLink}
+                  onClick={() => handleDrawerNavigate(`/#${HOME_SECTION_IDS.gallery}`)}
+                >
+                  {t("home.galleryTitle")}
+                </button>
+                <button
+                  type="button"
+                  className={styles.drawerNavLink}
+                  onClick={() => handleDrawerNavigate(`/#${HOME_SECTION_IDS.reviews}`)}
+                >
+                  {t("home.reviewsTitle")}
+                </button>
+              </div>
+            ) : null}
+          </li>
+          <li>
+            <button type="button" className={styles.drawerNavLink} onClick={() => handleDrawerNavigate("/faq")}>
+              {homeSectionContent.expertiseNavLabel}
+            </button>
+          </li>
+          <li>
+            <button type="button" className={styles.drawerNavLink} onClick={() => handleDrawerNavigate("/contacts")}>
+              {t("header.contacts")}
+            </button>
+          </li>
+          {user ? (
+            <li>
+              <button type="button" className={styles.drawerNavLink} onClick={() => handleDrawerNavigate("/cart")}>
+                {t("header.cart")}
+              </button>
+            </li>
+          ) : null}
           {!user ? (
-            <li onClick={() => closeAndNavigate("/login")}>{t("header.login")}</li>
+            <li>
+              <button type="button" className={styles.drawerNavLink} onClick={() => handleDrawerNavigate("/login")}>
+                {t("header.login")}
+              </button>
+            </li>
           ) : null}
           <li className={styles.drawerLanguageSection}>
             <div className={styles.drawerLanguageLabel}>{settingsText.language}</div>
@@ -549,7 +690,7 @@ export function Header() {
             </div>
           </li>
         </ul>
-      </div>
+      </aside>
 
       {user && isSettingsOpen ? (
         <div

@@ -130,7 +130,6 @@ export const Contacts = () => {
                     </svg>
                   )}
                 </span>
-                <span>{item.label}</span>
               </a>
             ))}
           </div>

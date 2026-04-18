@@ -349,10 +349,6 @@ export const SignUp = () => {
                 value: 2,
                 message: text.validation.usernameMin,
               },
-              maxLength: {
-                value: 20,
-                message: text.validation.usernameMax,
-              },
               pattern: {
                 value: /^[A-Za-z0-9_.@-]+$/,
                 message: text.validation.usernamePattern,
@@ -386,16 +382,8 @@ export const SignUp = () => {
                 message: text.validation.passwordRequired,
               },
               minLength: {
-                value: 8,
+                value: 6,
                 message: text.validation.passwordMin,
-              },
-              maxLength: {
-                value: 20,
-                message: text.validation.passwordMax,
-              },
-              pattern: {
-                value: /^(?!^\d{8}$).{8}$/,
-                message: text.validation.passwordPattern,
               },
             })}
           />
@@ -410,16 +398,8 @@ export const SignUp = () => {
                 message: text.validation.confirmRequired,
               },
               minLength: {
-                value: 8,
+                value: 6,
                 message: text.validation.passwordMin,
-              },
-              maxLength: {
-                value: 20,
-                message: text.validation.passwordMax,
-              },
-              pattern: {
-                value: /^(?!^\d{8}$).{8}$/,
-                message: text.validation.passwordPattern,
               },
             })}
           />

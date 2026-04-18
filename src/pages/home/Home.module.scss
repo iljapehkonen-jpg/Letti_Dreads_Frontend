@@ -1,6 +1,10 @@
 .home {
   padding-top: 100px;
 }
+
+.anchorSection {
+  scroll-margin-top: 120px;
+}
 .more {
   position: absolute;
   top: 548px;
@@ -210,6 +214,148 @@
       box-shadow: 0 18px 34px rgba(138, 77, 56, 0.26);
     }
   }
+}
+
+.weaving {
+  width: min(100%, 980px);
+  margin: 10px auto 0;
+  padding: 10px 20px 0;
+}
+
+.weavingSectionHeading {
+  margin-bottom: 14px;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    font-size: 34px;
+    color: #1a1d24;
+  }
+}
+
+.weavingCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.9fr);
+  gap: 18px;
+  align-items: center;
+  padding: 24px 26px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f6f8ff 0%, #ffffff 58%, #eef2ff 100%);
+  border: 1px solid rgba(18, 26, 48, 0.08);
+  box-shadow: 0 14px 32px rgba(12, 13, 15, 0.07);
+}
+
+.weavingCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 36px;
+    color: #1a1d24;
+  }
+
+  p {
+    margin: 0;
+    color: #5b6270;
+    font-size: 19px;
+    line-height: 1.75;
+  }
+}
+
+.weavingMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.weavingPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(50, 72, 243, 0.06);
+
+  span {
+    color: #5b6270;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  strong {
+    color: #1a1d24;
+    font-size: clamp(28px, 2.8vw, 38px);
+    line-height: 1.1;
+  }
+}
+
+.weavingSocialIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+}
+
+.weavingMeta > a {
+  min-height: 50px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  background-color: #3248f3;
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(50, 72, 243, 0.24);
+}
+
+.weavingSocials {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.weavingSocialLink {
+  width: 44px;
+  height: 44px;
+}
+
+.weavingSocialIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3248f3;
+  color: #ffffff;
+}
+
+.weavingSocialIconInstagram {
+  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%);
+}
+
+.weavingSocialIconFacebook {
+  background: #1877f2;
+}
+
+.weavingSocialIconPinterest {
+  background: #e60023;
 }
 .gallery {
   width: min(100%, 1320px);
@@ -621,6 +767,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .weavingCard {
+    grid-template-columns: 1fr;
+  }
+
   .customSetCard,
   .expertiseCard {
     max-width: 100%;
@@ -788,6 +938,10 @@
     padding: 20px 14px 8px;
   }
 
+  .weaving {
+    padding: 8px 14px 0;
+  }
+
   .customSetCard {
     width: 100%;
     max-width: 340px;
@@ -897,6 +1051,32 @@
     font-size: 18px;
   }
 
+  .weavingCard {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .weavingCopy h2 {
+    font-size: 30px;
+  }
+
+  .weavingCopy p {
+    font-size: 17px;
+  }
+
+  .weavingSectionHeading h2 {
+    font-size: 30px;
+  }
+
+  .weavingMeta {
+    width: 100%;
+  }
+
+  .weavingMeta > a {
+    width: 100%;
+    font-size: 17px;
+  }
+
   .positioningPanel {
     padding: 24px 20px 24px;
   }
@@ -932,13 +1112,16 @@
   .gallery h2,
   .review h2,
   .expertiseIntro h2,
-  .customSetIntro h2 {
+  .customSetIntro h2,
+  .weavingCopy h2,
+  .weavingSectionHeading h2 {
     font-size: 30px;
   }
 
   .aboutWe p,
   .expertiseIntro p,
-  .customSetIntro p {
+  .customSetIntro p,
+  .weavingCopy p {
     font-size: 16px;
   }
 
@@ -976,5 +1159,36 @@
   .customSetAction a {
     max-width: none;
     width: 100%;
+  }
+
+  .anchorSection {
+    scroll-margin-top: 106px;
+  }
+}
+
+:global(:root[data-theme="dark"]),
+:global(:root[data-theme="burgundy"]),
+:global(:root[data-theme="olive"]),
+:global(:root[data-theme="forest"]),
+:global(:root[data-theme="sapphire"]),
+:global(:root[data-theme="plum"]),
+:global(:root[data-theme="terracotta"]),
+:global(:root[data-theme="graphite"]) {
+  .weavingCopy h2,
+  .weavingSectionHeading h2,
+  .weavingPrice strong {
+    color: #f3f5f7;
+  }
+
+  .weavingCopy p,
+  .weavingPrice span {
+    color: #c7ced8;
+  }
+
+  .weavingCard,
+  .weavingPrice {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
   }
 }

@@ -5,8 +5,14 @@ import { SetItem } from "../../componets";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import axios from "../../axios.js";
 import { getCustomSetContent } from "../custom_set/content.js";
+import {
+  HOME_SECTION_IDS,
+  HOME_SOCIAL_LINKS,
+  getHomeSectionContent,
+} from "./sectionContent.js";
 
 const INSTAGRAM_URL = "https://www.instagram.com/letti_dreads/";
+const INSTAGRAM_PREVIEW_IMAGE = "/home-gallery/instagram-preview.jpg";
 const INSTAGRAM_LABELS = {
   fi: "Lisää kuvia Instagramissa",
   en: "More photos on Instagram",
@@ -107,10 +113,10 @@ export function Home() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const imgVisible = galleryImages.slice(0, imgCount);
   const galleryLightboxImages = imgVisible.slice(1);
-  const galleryPreviewImage = imgVisible[0] || "/dreads_card/prototyp1.jpg";
   const instagramLabel = INSTAGRAM_LABELS[language] || INSTAGRAM_LABELS.en;
   const lightboxText = LIGHTBOX_TEXT[language] || LIGHTBOX_TEXT.en;
   const customSetContent = getCustomSetContent(language);
+  const homeSectionContent = getHomeSectionContent(language);
 
   useEffect(() => {
     const loadHomeMedia = async () => {
@@ -212,13 +218,13 @@ export function Home() {
           </div>
         </div>
 
-        <div className={styles.aboutWe}>
+        <div id={HOME_SECTION_IDS.about} className={`${styles.aboutWe} ${styles.anchorSection}`}>
           <h2>{t("home.aboutTitle")}</h2>
           <p>{t("home.aboutText")}</p>
           <p>{aboutExtra}</p>
         </div>
 
-        <section className={styles.customSet}>
+        <section id={HOME_SECTION_IDS.customSet} className={`${styles.customSet} ${styles.anchorSection}`}>
           <div className={styles.customSetIntro}>
             <span>{customSetContent.homeBadge}</span>
             <h2>{customSetContent.homeTitle}</h2>
@@ -247,7 +253,7 @@ export function Home() {
           </div>
         </section>
 
-        <div className={styles.gallery}>
+        <div id={HOME_SECTION_IDS.gallery} className={`${styles.gallery} ${styles.anchorSection}`}>
           <h2>{t("home.galleryTitle")}</h2>
           <div className={styles.galleryList}>
             <a
@@ -256,7 +262,7 @@ export function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={galleryPreviewImage} alt="Instagram Letti Dreads" />
+              <img src={INSTAGRAM_PREVIEW_IMAGE} alt="Instagram Letti Dreads" />
               <span>{instagramLabel}</span>
             </a>
             {imgVisible.slice(1).map((src, idx) => (
@@ -288,7 +294,7 @@ export function Home() {
           </div>
         </div>
 
-        <div className={styles.review}>
+        <div id={HOME_SECTION_IDS.reviews} className={`${styles.review} ${styles.anchorSection}`}>
           <h2>{t("home.reviewsTitle")}</h2>
           <div className={styles.reviewContainer}>
             <button className={styles.scrollButton} onClick={() => scroll("left")}>
@@ -312,13 +318,7 @@ export function Home() {
           </div>
         </div>
 
-        <section className={styles.positioning}>
-          <div className={styles.positioningPanel}>
-            <p>{t("home.aboutText")}</p>
-          </div>
-        </section>
-
-        <section className={styles.expertise}>
+        <section id={HOME_SECTION_IDS.expertise} className={`${styles.expertise} ${styles.anchorSection}`}>
           <div className={styles.expertiseIntro}>
             <span>{t("home.expertiseBadge")}</span>
             <h2>{t("home.expertiseTitle")}</h2>

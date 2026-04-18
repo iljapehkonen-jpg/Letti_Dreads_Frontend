@@ -19,8 +19,27 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [location.pathname, location.search]);
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      return;
+    }
+
+    const id = location.hash.slice(1);
+    const scrollToHash = () => {
+      const element = document.getElementById(id);
+      if (!element) {
+        return;
+      }
+
+      const headerOffset = window.innerWidth <= 430 ? 104 : 116;
+      const top = element.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+    };
+
+    window.requestAnimationFrame(() => {
+      window.setTimeout(scrollToHash, 80);
+    });
+  }, [location.pathname, location.search, location.hash]);
 
   return (
     <div className="wrapper">
