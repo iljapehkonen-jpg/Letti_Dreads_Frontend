@@ -428,6 +428,24 @@
   opacity: 0.74;
 }
 
+.menuActionLabel {
+  position: relative;
+  display: inline-block;
+}
+
+.menuActionLabel::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.24s ease;
+}
+
 .menuPrimaryActionActive {
   opacity: 1;
   text-shadow: 0 0 12px var(--logo-glow);
@@ -442,6 +460,14 @@
 .menuPrimaryAction:hover,
 .menuItemExpanded .menuPrimaryAction {
   opacity: 1;
+}
+
+.menuPrimaryAction:hover .menuActionLabel::after,
+.menuPrimaryAction:focus-visible .menuActionLabel::after,
+.submenuLink:hover .menuActionLabel::after,
+.submenuLink:focus-visible .menuActionLabel::after {
+  transform: scaleX(1);
+  transform-origin: left center;
 }
 
 .menuSecondaryAction {
@@ -926,6 +952,10 @@
     text-align: left;
     white-space: normal;
     opacity: 1;
+  }
+
+  .menuActionLabel::after {
+    display: none;
   }
 
   .menuPrimaryActionActive {

@@ -788,7 +788,7 @@ export function Header() {
     if (item.to) {
       return (
         <Link to={item.to} className={className} onClick={closeDrawer}>
-          {item.label}
+          <span className={styles.menuActionLabel}>{item.label}</span>
         </Link>
       );
     }
@@ -799,7 +799,7 @@ export function Header() {
         className={className}
         onClick={() => toggleMenuSection(item.id)}
       >
-        {item.label}
+        <span className={styles.menuActionLabel}>{item.label}</span>
       </button>
     );
   };
@@ -1081,7 +1081,9 @@ export function Header() {
                                   }`}
                                   onClick={closeDrawer}
                                 >
-                                  {link.label}
+                                  <span className={styles.menuActionLabel}>
+                                    {link.label}
+                                  </span>
                                 </Link>
                               ))}
                             </div>
