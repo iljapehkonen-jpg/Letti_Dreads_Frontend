@@ -1,10 +1,7 @@
 import axios from "axios";
 
 const AUTH_STORAGE_KEY = "letti-auth-user";
-const rawApiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_SERVER_HOST ||
-  "";
+const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
 const apiBaseUrl = rawApiBaseUrl.replace(/\/+$/, "");
 
 const instance = axios.create({
